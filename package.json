@@ -1,0 +1,46 @@
+{
+  "name": "easycal",
+  "version": "1.0.0",
+  "description": "A lightweight, zero-dependency JavaScript calendar library",
+  "type": "module",
+  "main": "dist/easycal.cjs",
+  "module": "dist/easycal.esm.js",
+  "browser": "dist/easycal.umd.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/easycal.esm.js",
+      "require": "./dist/easycal.cjs"
+    },
+    "./style.css": "./dist/easycal.css"
+  },
+  "unpkg": "dist/easycal.umd.min.js",
+  "jsdelivr": "dist/easycal.umd.min.js",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "npm run build",
+    "lint": "eslint .",
+    "test": "node --env-file=.env src/tests/index.js",
+    "demo": "node server.js"
+  },
+  "keywords": [
+    "calendar",
+    "scheduler",
+    "datepicker",
+    "events",
+    "vanilla-js"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^4.0.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "@rollup/plugin-terser": "^0.4.4"
+  }
+}
