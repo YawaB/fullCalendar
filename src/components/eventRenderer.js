@@ -1,4 +1,4 @@
-import { clamp } from '../core/utils.js';
+import { clamp } from '../core/timeUtils.js';
 
 function escapeHtml(value) {
   return String(value)
@@ -26,4 +26,12 @@ export function renderAbsoluteTimelineEvent(event, viewStart, viewEnd, options =
   const textColor = event.textColor || options.eventTextColor || '#ffffff';
 
   return `<div class="ec-event ec-timeline-event" data-event-id="${event.id}" style="left:${left}%;width:${width}%;background:${color};color:${textColor}">${escapeHtml(event.title)}</div>`;
+}
+
+export function renderResourceTimelineEvent(positioned, options = {}) {
+  const { event, left, width, top, laneIndex } = positioned;
+  const color = event.color || options.eventColor || '#ef4444';
+  const textColor = event.textColor || options.eventTextColor || '#ffffff';
+
+  return `<div class="ec-event ec-rt-event" data-event-id="${event.id}" data-resource-id="${event.resourceId || ''}" data-lane="${laneIndex}" style="left:${left}%;width:${width}%;top:${top}px;background:${color};color:${textColor}">${escapeHtml(event.title)}</div>`;
 }

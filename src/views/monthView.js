@@ -1,4 +1,4 @@
-import { endOfMonth, endOfWeek, getDaysInRange, isToday, startOfMonth, startOfWeek } from '../core/utils.js';
+import { endOfMonth, endOfWeek, getDaysInRange, isToday, startOfMonth, startOfWeek } from '../core/timeUtils.js';
 import { renderEventBlock } from '../components/eventRenderer.js';
 
 export default function monthView(calendar) {

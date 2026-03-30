@@ -1,4 +1,4 @@
-import { MS, formatTime, toDate } from '../core/utils.js';
+import { MS, formatTime, toDate } from '../core/timeUtils.js';
 
 export function buildTimeAxis(viewStart, viewEnd, options = {}) {
   const slotMinutes = options.slotDurationMinutes || 60;

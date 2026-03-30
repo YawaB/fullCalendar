@@ -1,7 +1,8 @@
 import './styles/base.css';
+import './styles/timeline.css';
+import './styles/resources.css';
 import './styles/month.css';
 import './styles/timegrid.css';
-import './styles/timeline.css';
 
 import CalendarCore from './core/calendarCore.js';
 

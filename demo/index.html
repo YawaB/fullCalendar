@@ -698,14 +698,15 @@
     const m = String(today.getMonth() + 1).padStart(2, '0');
 
     const cal = new EasyCal('#calendar', {
-        initialView: 'timeline',
-        timelineRange: 'month',
+        initialView: 'resourceTimeline',
+        resourceTimelineRange: 'days',
+        visibleDays: 14,
         slotDurationMinutes: 24 * 60,
         firstDay: 1,
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
-            right: 'timeline,month,week,day'
+            right: 'resourceTimeline,month,week,day'
         },
         resources: [
             {id: 'v1', title: 'AB-123-CD4', badgeText: 'Immobilisé', badgeColor: '#ef4444'},

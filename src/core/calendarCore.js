@@ -1,29 +1,32 @@
 import { EventModel } from './eventModel.js';
-import { addDays, addMonths, addWeeks, endOfDay, endOfWeek, mergeOptions, startOfDay, startOfWeek } from './utils.js';
+import { ResourceModel } from './resourceModel.js';
+import { addDays, addMonths, addWeeks, endOfWeek, mergeOptions, startOfDay, startOfWeek } from './timeUtils.js';
 import monthView from '../views/monthView.js';
 import timeGridView from '../views/timeGridView.js';
-import timelineView from '../views/timelineView.js';
+import resourceTimelineView from '../views/resourceTimelineView.js';
 import interactionPlugin from '../plugins/interactionPlugin.js';
 import popupPlugin from '../plugins/popupPlugin.js';
 
 const DEFAULT_OPTIONS = {
-  initialView: 'month',
+  initialView: 'resourceTimeline',
   locale: 'default',
   firstDay: 1,
+  resources: [],
   events: [],
-  eventColor: '#2563eb',
+  eventColor: '#ef4444',
   eventTextColor: '#ffffff',
-  editable: false,
+  editable: true,
   selectable: true,
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
-    right: 'month,week,day,timeline',
+    right: 'resourceTimeline,month,week,day',
   },
-  timelineRange: 'day',
+  resourceTimelineRange: 'day',
   slotDurationMinutes: 60,
   minTimeHour: 0,
   maxTimeHour: 24,
+  resourceRowHeight: 68,
   plugins: ['interaction', 'popup'],
 
   onEventClick: null,
@@ -36,25 +39,21 @@ const VIEW_RENDERERS = {
   month: monthView,
   week: timeGridView,
   day: timeGridView,
-  timeline: timelineView,
+  resourceTimeline: resourceTimelineView,
 };
 
-function makeTitle(calendar) {
-  const { currentDate, currentView, options } = calendar;
-  if (currentView === 'month') {
-    return currentDate.toLocaleDateString(options.locale, { month: 'long', year: 'numeric' });
+function makeTitle(cal) {
+  if (cal.currentView === 'month') {
+    return cal.currentDate.toLocaleDateString(cal.options.locale, { month: 'long', year: 'numeric' });
   }
-  if (currentView === 'timeline' && options.timelineRange !== 'day') {
-    const start = options.timelineRange === 'week' ? startOfWeek(currentDate, options.firstDay) : startOfDay(currentDate);
-    const end = options.timelineRange === 'week' ? endOfWeek(currentDate, options.firstDay) : endOfDay(addDays(currentDate, 30));
-    return `${start.toLocaleDateString(options.locale)} - ${end.toLocaleDateString(options.locale)}`;
+  if (cal.currentView === 'week') {
+    const start = startOfWeek(cal.currentDate, cal.options.firstDay);
+    const end = endOfWeek(cal.currentDate, cal.options.firstDay);
+    return `${start.toLocaleDateString(cal.options.locale)} - ${end.toLocaleDateString(cal.options.locale)}`;
   }
 
-  return currentDate.toLocaleDateString(options.locale, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  return cal.currentDate.toLocaleDateString(cal.options.locale, {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
   });
 }
 
@@ -67,7 +66,7 @@ export default class CalendarCore {
     this.currentDate = new Date(options.initialDate || new Date());
     this.currentView = this.options.initialView;
     this.eventModel = new EventModel(this.options.events);
-
+    this.resourceModel = new ResourceModel(this.options.resources);
     this.viewRenderers = { ...VIEW_RENDERERS, ...(this.options.views || {}) };
     this.plugins = [];
 
@@ -86,13 +85,13 @@ export default class CalendarCore {
     if (this.currentView === 'week') return addWeeks(this.currentDate, direction);
     if (this.currentView === 'day') return addDays(this.currentDate, direction);
 
-    if (this.options.timelineRange === 'week') return addWeeks(this.currentDate, direction);
-    if (this.options.timelineRange === 'month') return addMonths(this.currentDate, direction);
+    if (this.options.resourceTimelineRange === 'week') return addWeeks(this.currentDate, direction);
+    if (this.options.resourceTimelineRange === 'days') return addDays(this.currentDate, (this.options.visibleDays || 3) * direction);
     return addDays(this.currentDate, direction);
   }
 
-  _buildToolbarSection(definition = '') {
-    return definition
+  _toolbarSection(def = '') {
+    return def
       .split(/[\s,]+/)
       .filter(Boolean)
       .map(token => {
@@ -112,86 +111,53 @@ export default class CalendarCore {
   _buildToolbar() {
     const tb = this.options.headerToolbar;
     if (!tb) return '';
-
     return `<div class="ec-toolbar">
-      <div>${this._buildToolbarSection(tb.left)}</div>
-      <div>${this._buildToolbarSection(tb.center)}</div>
-      <div>${this._buildToolbarSection(tb.right)}</div>
+      <div>${this._toolbarSection(tb.left)}</div>
+      <div>${this._toolbarSection(tb.center)}</div>
+      <div>${this._toolbarSection(tb.right)}</div>
       <div><button class="ec-btn" data-action="open-add-popup">+ Add Event</button></div>
     </div>`;
   }
 
-  _bindToolbarActions() {
-    this.el.querySelectorAll('[data-action="prev"]').forEach(btn => (btn.onclick = () => this.prev()));
-    this.el.querySelectorAll('[data-action="next"]').forEach(btn => (btn.onclick = () => this.next()));
-    this.el.querySelectorAll('[data-action="today"]').forEach(btn => (btn.onclick = () => this.today()));
-    this.el.querySelectorAll('[data-action="change-view"]').forEach(btn => {
-      btn.onclick = () => this.changeView(btn.dataset.view);
+  _bindToolbar() {
+    this.el.querySelectorAll('[data-action="prev"]').forEach(el => (el.onclick = () => this.prev()));
+    this.el.querySelectorAll('[data-action="next"]').forEach(el => (el.onclick = () => this.next()));
+    this.el.querySelectorAll('[data-action="today"]').forEach(el => (el.onclick = () => this.today()));
+    this.el.querySelectorAll('[data-action="change-view"]').forEach(el => {
+      el.onclick = () => this.changeView(el.dataset.view);
     });
   }
 
   render() {
     const renderer = this.viewRenderers[this.currentView];
-    if (!renderer) throw new Error(`[EasyCal] Unknown view: ${this.currentView}`);
+    if (!renderer) throw new Error(`Unknown view: ${this.currentView}`);
 
     this.el.classList.add('easycal');
     this.el.innerHTML = `${this._buildToolbar()}${renderer(this)}`;
-    this._bindToolbarActions();
+    this._bindToolbar();
     this.plugins.forEach(plugin => plugin.bind?.(this.el));
 
-    if (this.currentView === 'timeline') {
-      const nowIndicator = this.el.querySelector('.ec-now-indicator');
-      if (nowIndicator) {
-        const container = this.el.querySelector('.ec-timeline-axis-wrap');
-        if (container) {
-          const scrollLeft = (nowIndicator.offsetLeft || 0) - container.clientWidth / 2;
-          container.scrollLeft = Math.max(scrollLeft, 0);
-        }
-      }
+    if (this.currentView === 'resourceTimeline') {
+      const axis = this.el.querySelector('.ec-rt-header-axis');
+      const now = this.el.querySelector('.ec-rt-now');
+      if (axis && now) axis.scrollLeft = Math.max(now.offsetLeft - axis.clientWidth / 2, 0);
     }
   }
 
-  next() {
-    this.currentDate = this._offsetDate(1);
+  next() { this.currentDate = this._offsetDate(1); this.render(); }
+  prev() { this.currentDate = this._offsetDate(-1); this.render(); }
+  today() { this.currentDate = startOfDay(new Date()); this.render(); }
+
+  changeView(view) {
+    if (!this.viewRenderers[view]) return;
+    this.currentView = view;
     this.render();
   }
 
-  prev() {
-    this.currentDate = this._offsetDate(-1);
-    this.render();
-  }
-
-  today() {
-    this.currentDate = new Date();
-    this.render();
-  }
-
-  changeView(viewName) {
-    if (!this.viewRenderers[viewName]) return;
-    this.currentView = viewName;
-    this.render();
-  }
-
-  addEvent(event) {
-    const created = this.eventModel.add(event);
-    this.render();
-    return created;
-  }
-
-  removeEvent(id) {
-    this.eventModel.remove(id);
-    this.render();
-  }
-
-  updateEvent(id, patch) {
-    const updated = this.eventModel.update(id, patch);
-    this.render();
-    return updated;
-  }
-
-  getEvents() {
-    return this.eventModel.all();
-  }
+  addEvent(event) { const out = this.eventModel.add(event); this.render(); return out; }
+  removeEvent(id) { this.eventModel.remove(id); this.render(); }
+  updateEvent(id, patch) { const out = this.eventModel.update(id, patch); this.render(); return out; }
+  getEvents() { return this.eventModel.all(); }
 
   destroy() {
     this.plugins.forEach(plugin => plugin.destroy?.());
