@@ -698,20 +698,29 @@
     const m = String(today.getMonth() + 1).padStart(2, '0');
 
     const cal = new EasyCal('#calendar', {
-        view: 'month',
-        eventColor: '#0f3460',
-        eventTextColor: '#ffffff',
+        view: 'timeline',
+        timelineGranularity: 'month',
+        firstDay: 1,
+        headerToolbar: {
+            left: 'prev,next,today',
+            center: 'title',
+            right: 'timeline,month,week,day'
+        },
+        resources: [
+            {id: 'v1', title: 'AB-123-CD4', badgeText: 'Immobilisé', badgeColor: '#ef4444'},
+            {id: 'v2', title: 'CN191011234', badgeText: 'Disponible', badgeColor: '#22c55e'},
+            {id: 'v3', title: '123654789', badgeText: 'Disponible', badgeColor: '#22c55e'},
+            {id: 'v4', title: 'VD148250', badgeText: 'Immobilisé', badgeColor: '#ef4444'},
+            {id: 'v5', title: 'AB-123-CDFF', badgeText: 'Disponible', badgeColor: '#22c55e'},
+            {id: 'v6', title: 'TEST 3445', badgeText: 'Disponible', badgeColor: '#22c55e'},
+        ],
         events: [
-            {title: 'Team Standup', start: `${y}-${m}-03T09:00`, end: `${y}-${m}-03T09:30`, color: '#3b82f6'},
-            {title: 'Product Review', start: `${y}-${m}-07T14:00`, end: `${y}-${m}-07T15:30`, color: '#10b981'},
-            {title: 'Design Sprint', start: `${y}-${m}-10`, end: `${y}-${m}-12`, allDay: true, color: '#f59e0b'},
-            {title: 'Board Meeting', start: `${y}-${m}-14T10:00`, end: `${y}-${m}-14T12:00`, color: '#ef4444'},
-            {title: 'Retrospective', start: `${y}-${m}-17T15:00`, end: `${y}-${m}-17T16:00`, color: '#8b5cf6'},
-            {title: 'OKR Planning', start: `${y}-${m}-21T09:00`, end: `${y}-${m}-21T11:00`, color: '#0f3460'},
-            {title: 'Company Offsite', start: `${y}-${m}-24`, end: `${y}-${m}-26`, allDay: true, color: '#ec4899'},
-            {title: 'Q1 Kickoff', start: `${y}-${m}-28T13:00`, end: `${y}-${m}-28T14:30`, color: '#14b8a6'},
-            {title: 'Sprint Demo', start: `${y}-${m}-05T16:00`, end: `${y}-${m}-05T17:00`, color: '#f97316'},
-            {title: 'Lunch & Learn', start: `${y}-${m}-12T12:00`, end: `${y}-${m}-12T13:00`, color: '#6366f1'},
+            {title: 'IMMOBILISATION POUR RÉPARATION', start: `${y}-${m}-03`, end: `${y}-${m}-14`, color: '#ff4040', resourceId: 'v1'},
+            {title: 'Liaison chauffeur', start: `${y}-${m}-02`, end: `${y}-${m}-06`, color: '#ff4040', resourceId: 'v2'},
+            {title: 'EN MAINTENANCE', start: `${y}-${m}-03`, end: `${y}-${m}-12`, color: '#ff4040', resourceId: 'v3'},
+            {title: 'Mise en fourrière', start: `${y}-${m}-03`, end: `${y}-${m}-04`, color: '#ff4040', resourceId: 'v5'},
+            {title: 'Immobilisation pneu', start: `${y}-${m}-10`, end: `${y}-${m}-11`, color: '#ff4040', resourceId: 'v6'},
+            {title: 'Liaison chauffeur', start: `${y}-${m}-13`, end: `${y}-${m}-15`, color: '#ff4040', resourceId: 'v4'},
         ],
         eventClick({event}) {
             const time = event.allDay

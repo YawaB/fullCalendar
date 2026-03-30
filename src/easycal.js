@@ -13,6 +13,7 @@ import renderMonthView from './views/month.js';
 import renderWeekView from './views/week.js';
 import renderDayView from './views/day.js';
 import renderListView from './views/list.js';
+import { renderTimelineView } from './views/rendertimeline.js';
 
 // Registry
 const VIEW_RENDERERS = {
@@ -20,6 +21,7 @@ const VIEW_RENDERERS = {
     week: renderWeekView,
     day: renderDayView,
     list: renderListView,
+    timeline: renderTimelineView,
 };
 
 const VIEW_LABELS = {
@@ -27,6 +29,7 @@ const VIEW_LABELS = {
     week: 'Week',
     day: 'Day',
     list: 'List',
+    timeline: 'Timeline',
 };
 
 // ─── Default Options ──────────────────────────────────────────────────────────
@@ -41,7 +44,7 @@ const DEFAULT_OPTIONS = {
     headerToolbar: {
         left: 'prev,next,today',
         center: 'title',
-        right: 'month,week,day,list',
+        right: 'month,week,day,list,timeline',
     },
     eventColor: '#3b82f6',
     eventTextColor: '#ffffff',
@@ -134,6 +137,8 @@ class EventStore {
             allDay: event.allDay ?? false,
             color: event.color ?? null,
             textColor: event.textColor ?? null,
+            resourceId: event.resourceId ?? null,
+            extendedProps: event.extendedProps ?? {},
             raw: event,
         };
     }
@@ -244,6 +249,12 @@ class EasyCal {
                 return DateUtils.addWeeks(d, direction);
             case 'day':
                 return DateUtils.addDays(d, direction);
+            case 'timeline': {
+                const granularity = this.options.timelineGranularity || 'month';
+                if (granularity === 'week') return DateUtils.addWeeks(d, direction);
+                if (granularity === 'day') return DateUtils.addDays(d, direction);
+                return DateUtils.addMonths(d, direction);
+            }
             default:
                 return d;
         }
@@ -259,7 +270,7 @@ class EasyCal {
             const parts = section.split(/[\s,]+/);
             let html = '';
 
-            const views = ['month', 'week', 'day', 'list'];
+            const views = ['month', 'week', 'day', 'list', 'timeline'];
 
             parts.forEach(part => {
                 if (part === 'prev') {
@@ -316,7 +327,7 @@ class EasyCal {
             };
         });
 
-        this.el.querySelectorAll('.ec-event').forEach(el => {
+        this.el.querySelectorAll('.ec-event, .ec-tl-event').forEach(el => {
             el.onclick = (e) => {
                 const event = this.store.getById(el.dataset.eventId);
                 if (event && this.options.eventClick) {

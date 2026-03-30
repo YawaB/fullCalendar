@@ -220,7 +220,7 @@ export function renderTimelineView(cal) {
         html += `<div class="ec-tl-empty">No resources defined. Pass a <code>resources</code> array in options.</div>`;
     } else {
         resources.forEach(resource => {
-            const rowEvents = allEvents.filter(ev => ev.resourceId === resource.id || ev._raw?.resourceId === resource.id);
+            const rowEvents = allEvents.filter(ev => ev.resourceId === resource.id || ev.raw?.resourceId === resource.id || ev._raw?.resourceId === resource.id);
             html += buildResourceRow(resource, rowEvents, days, rangeStart, rangeEnd, options);
         });
     }

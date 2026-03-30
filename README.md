@@ -48,13 +48,15 @@ Or via CDN:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `view` | `string` | `'month'` | Initial view: `month`, `week`, `day`, `list` |
+| `view` | `string` | `'month'` | Initial view: `month`, `week`, `day`, `list`, `timeline` |
 | `date` | `Date` | `new Date()` | Initial date |
 | `events` | `array` | `[]` | Array of event objects |
 | `locale` | `string` | `'default'` | Locale string for date formatting |
 | `firstDay` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 | `eventColor` | `string` | `'#3b82f6'` | Default event background color |
 | `eventTextColor` | `string` | `'#ffffff'` | Default event text color |
+| `resources` | `array` | `[]` | Resource rows used by `timeline` view |
+| `timelineGranularity` | `string` | `'month'` | Timeline date span: `month`, `week`, `day` |
 | `headerToolbar` | `object` | See below | Toolbar layout |
 
 ### headerToolbar
@@ -63,7 +65,7 @@ Or via CDN:
 {
   left:   'prev,next today',
   center: 'title',
-  right:  'month,week,day,list'
+  right:  'month,week,day,list,timeline'
 }
 ```
 
@@ -78,6 +80,7 @@ Or via CDN:
   allDay:     false,
   color:      '#3b82f6',        // overrides eventColor
   textColor:  '#ffffff',
+  resourceId: 'vehicle-1',      // optional, used in timeline view
   extendedProps: {}             // custom data
 }
 ```
