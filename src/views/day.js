@@ -1,6 +1,6 @@
 import { DateUtils } from '../core/index.js';
 
-export function renderDayView(cal) {
+export default function renderDayView(cal) {
     const { currentDate, options, store } = cal;
     const dayStart = DateUtils.startOfDay(currentDate);
     const dayEnd = DateUtils.endOfDay(currentDate);

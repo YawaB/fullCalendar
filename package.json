@@ -1,5 +1,5 @@
 {
-  "name": "easycal",
+  "name": "@brinda_yawa/easycal",
   "version": "1.0.0",
   "description": "A lightweight, zero-dependency JavaScript calendar library",
   "type": "module",

@@ -1,6 +1,6 @@
 import { DateUtils } from '../core/index.js';
 
-export function renderMonthView(cal) {
+export default function renderMonthView(cal) {
     const { currentDate, options, store } = cal;
     const firstDay = options.firstDay;
     const monthStart = DateUtils.startOfMonth(currentDate);

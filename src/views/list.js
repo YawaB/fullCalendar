@@ -1,6 +1,6 @@
 import { DateUtils } from '../core/index.js';
 
-export function renderListView(cal) {
+export default function renderListView(cal) {
     const { currentDate, options, store } = cal;
     // Show 30 days from the start of the current month
     const rangeStart = DateUtils.startOfMonth(currentDate);

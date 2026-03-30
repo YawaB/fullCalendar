@@ -1,66 +1,73 @@
 import { DateUtils } from '../core/index.js';
 
-export function renderMonthView(cal) {
+export default function renderMonthView(cal) {
     const { currentDate, options, store } = cal;
-    const firstDay = options.firstDay;
+
     const monthStart = DateUtils.startOfMonth(currentDate);
     const monthEnd = DateUtils.endOfMonth(currentDate);
-    const gridStart = DateUtils.startOfWeek(monthStart, firstDay);
-    const gridEnd = DateUtils.endOfWeek(monthEnd, firstDay);
-    const days = DateUtils.getDaysInRange(gridStart, gridEnd);
-    const events = store.getInRange(gridStart, gridEnd);
-    const today = new Date();
+    const days = DateUtils.getDaysInRange(monthStart, monthEnd);
+    const events = store.getInRange(monthStart, monthEnd);
 
-    // Day-of-week headers
-    const dayNames = [];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(gridStart);
-        d.setDate(d.getDate() + i);
-        dayNames.push(d.toLocaleDateString(options.locale, { weekday: 'short' }));
-    }
+    const hours = Array.from({ length: 24 }, (_, i) => i);
 
-    let html = `<div class="ec-month-view">`;
+    let html = `<div class="ec-month-timeline">`;
 
-    // Header row
-    html += `<div class="ec-month-header">`;
-    dayNames.forEach(name => {
-        html += `<div class="ec-col-header">${name}</div>`;
+    // Header (hours)
+    html += `<div class="ec-timeline-header">`;
+    html += `<div class="ec-day-label-header"></div>`;
+    hours.forEach(h => {
+        html += `<div class="ec-time-header">${h}h</div>`;
     });
     html += `</div>`;
 
-    // Grid
-    html += `<div class="ec-month-grid">`;
-    for (let i = 0; i < days.length; i += 7) {
-        html += `<div class="ec-week-row">`;
-        for (let j = 0; j < 7; j++) {
-            const day = days[i + j];
-            const isToday = DateUtils.isToday(day);
-            const isOtherMonth = !DateUtils.isSameMonth(day, currentDate);
-            const dayEvents = events.filter(e =>
-                DateUtils.isWithinRange(day, DateUtils.startOfDay(e.start), DateUtils.endOfDay(e.end))
-            );
+    // Rows per day
+    days.forEach(day => {
+        const isToday = DateUtils.isToday(day);
+        const dayStart = DateUtils.startOfDay(day);
+        const dayEnd = DateUtils.endOfDay(day);
 
-            html += `<div class="ec-day-cell${isToday ? ' ec-today' : ''}${isOtherMonth ? ' ec-other-month' : ''}" 
-        data-date="${day.toISOString()}" data-action="dateClick">`;
-            html += `<div class="ec-day-number">${isToday ? `<span class="ec-today-dot">${day.getDate()}</span>` : day.getDate()}</div>`;
-            html += `<div class="ec-day-events">`;
-            dayEvents.slice(0, 3).forEach(ev => {
-                const color = ev.color || options.eventColor;
-                const textColor = ev.textColor || options.eventTextColor;
-                html += `<div class="ec-event" 
-          data-event-id="${ev.id}"
-          style="background:${color};color:${textColor}"
-          title="${ev.title}">
-          <span class="ec-event-title">${ev.allDay ? '' : `<span class="ec-event-time">${DateUtils.formatTime(ev.start, options.locale)}</span>`}${ev.title}</span>
+        const dayEvents = events.filter(e =>
+            e.start <= dayEnd && e.end >= dayStart
+        );
+
+        html += `<div class="ec-timeline-row">`;
+
+        // Day label
+        html += `<div class="ec-day-label ${isToday ? 'ec-today' : ''}">
+            ${day.toLocaleDateString(options.locale, { weekday: 'short', day: 'numeric' })}
         </div>`;
-            });
-            if (dayEvents.length > 3) {
-                html += `<div class="ec-more-events" data-date="${day.toISOString()}">+${dayEvents.length - 3} more</div>`;
-            }
-            html += `</div></div>`;
-        }
-        html += `</div>`;
-    }
-    html += `</div></div>`;
+
+        // Timeline grid
+        html += `<div class="ec-timeline-grid">`;
+
+        hours.forEach(h => {
+            html += `<div class="ec-hour-cell" data-hour="${h}"></div>`;
+        });
+
+        // Events positioning
+        dayEvents.forEach(ev => {
+            const color = ev.color || options.eventColor;
+            const textColor = ev.textColor || options.eventTextColor;
+
+            const evStart = ev.start < dayStart ? dayStart : ev.start;
+            const evEnd = ev.end > dayEnd ? dayEnd : ev.end;
+
+            const startMin = evStart.getHours() * 60 + evStart.getMinutes();
+            const endMin = evEnd.getHours() * 60 + evEnd.getMinutes();
+
+            const left = (startMin / 60) / 24 * 100;
+            const width = ((endMin - startMin) / 60) / 24 * 100;
+
+            html += `<div class="ec-event ec-timeline-event"
+                data-event-id="${ev.id}"
+                style="left:${left}%;width:${width}%;background:${color};color:${textColor}">
+                ${ev.title}
+            </div>`;
+        });
+
+        html += `</div></div>`;
+    });
+
+    html += `</div>`;
     return html;
 }
