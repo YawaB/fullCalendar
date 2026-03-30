@@ -1,7 +1,7 @@
 const postcss = require('rollup-plugin-postcss');
 const terser = require('@rollup/plugin-terser');
 module.exports = {
-  input: 'src/easycal.js',
+  input: 'src/index.js',
   output: [
     // CommonJS (Node / legacy)
     {

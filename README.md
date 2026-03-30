@@ -1,42 +1,51 @@
-# EasyCal
+# EasyCal (Modular Edition)
 
-A lightweight, zero-dependency JavaScript calendar library.
+EasyCal is a lightweight calendar package with a modular architecture inspired by FullCalendar:
+- `month` view (grid)
+- `week`/`day` time-grid view
+- premium-style `timeline` view with horizontal time axis
+- plugin hooks for interactions and popup-based event creation
 
-## Features
+## Folder Structure
 
-- 🗓 **4 Views**: Month, Week, Day, List/Agenda
-- ⚡ **Zero dependencies** — pure vanilla JS
-- 🎨 **Fully themeable** via CSS custom properties
-- 📡 **Event API** — add/remove/update events at runtime
-- 🌍 **i18n ready** — locale-aware via `Intl` API
-- 📦 **UMD + ESM** builds for any environment
-
-## Installation
-
-```bash
-npm install easycal
-```
-
-Or via CDN:
-```html
-<link rel="stylesheet" href="https://unpkg.com/easycal/dist/easycal.css">
-<script src="https://unpkg.com/easycal/dist/easycal.js"></script>
+```txt
+/src
+  /core
+    calendarCore.js
+    eventModel.js
+    utils.js
+  /views
+    monthView.js
+    timeGridView.js
+    timelineView.js
+  /plugins
+    interactionPlugin.js
+    popupPlugin.js
+  /components
+    eventRenderer.js
+    timeAxis.js
+  /styles
+    base.css
+    month.css
+    timegrid.css
+    timeline.css
+  index.js
 ```
 
 ## Quick Start
 
 ```html
-<link rel="stylesheet" href="easycal.css">
+<link rel="stylesheet" href="https://unpkg.com/easycal/dist/easycal.css" />
 <div id="calendar"></div>
-<script src="easycal.js"></script>
+<script src="https://unpkg.com/easycal/dist/easycal.umd.js"></script>
 <script>
   const cal = new EasyCal('#calendar', {
-    view: 'month',
+    initialView: 'month',
     events: [
       {
         title: 'Team Standup',
-        start: '2025-01-15T09:00:00',
-        end:   '2025-01-15T09:30:00',
+        start: '2026-03-30T09:00:00',
+        end: '2026-03-30T09:30:00',
         color: '#3b82f6'
       }
     ]
@@ -46,95 +55,99 @@ Or via CDN:
 
 ## Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `view` | `string` | `'month'` | Initial view: `month`, `week`, `day`, `list`, `timeline` |
-| `date` | `Date` | `new Date()` | Initial date |
-| `events` | `array` | `[]` | Array of event objects |
-| `locale` | `string` | `'default'` | Locale string for date formatting |
-| `firstDay` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
-| `eventColor` | `string` | `'#3b82f6'` | Default event background color |
-| `eventTextColor` | `string` | `'#ffffff'` | Default event text color |
-| `resources` | `array` | `[]` | Resource rows used by `timeline` view |
-| `timelineGranularity` | `string` | `'month'` | Timeline date span: `month`, `week`, `day` |
-| `headerToolbar` | `object` | See below | Toolbar layout |
+| Option | Type | Default |
+|---|---|---|
+| `initialView` | `month \| week \| day \| timeline` | `month` |
+| `views` | `Record<string, fn>` | `{}` |
+| `events` | `array` | `[]` |
+| `editable` | `boolean` | `false` |
+| `selectable` | `boolean` | `true` |
+| `onEventClick` | `function` | `null` |
+| `onDateClick` | `function` | `null` |
+| `slotDurationMinutes` | `number` | `60` |
+| `slotLabelFormat` | `function` | `null` |
+| `minTimeHour` / `maxTimeHour` | `number` | `0 / 24` |
+| `timelineRange` | `day \| week \| month` | `day` |
+| `resources` | `array` | `[]` |
 
-### headerToolbar
+## Event Model
 
-```js
-{
-  left:   'prev,next today',
-  center: 'title',
-  right:  'month,week,day,list,timeline'
-}
-```
-
-## Event Object
+All events are normalized to:
 
 ```js
 {
-  id:         'optional-id',    // auto-generated if omitted
-  title:      'My Event',       // required
-  start:      '2025-03-10T09:00', // Date or ISO string
-  end:        '2025-03-10T10:00', // Date or ISO string
-  allDay:     false,
-  color:      '#3b82f6',        // overrides eventColor
-  textColor:  '#ffffff',
-  resourceId: 'vehicle-1',      // optional, used in timeline view
-  extendedProps: {}             // custom data
+  id,
+  title,
+  start,
+  end,
+  color,
+  textColor,
+  allDay
 }
 ```
 
-## Callbacks
+`resourceId` is also supported for timeline rows.
+
+## Timeline View Example
 
 ```js
 const cal = new EasyCal('#calendar', {
-  eventClick({ event, el, jsEvent }) {},
-  eventMouseEnter({ event, el, jsEvent }) {},
-  eventMouseLeave({ event, el, jsEvent }) {},
-  dateClick({ date, el, jsEvent }) {},
-  datesSet({ view, start, el }) {},
-  viewDidMount({ view, date, el }) {},
+  initialView: 'timeline',
+  timelineRange: 'day',
+  slotDurationMinutes: 30,
+  minTimeHour: 6,
+  maxTimeHour: 22,
+  resources: [
+    { id: 'veh-1', title: 'AB-123-CD4' },
+    { id: 'veh-2', title: 'CN191011234' }
+  ],
+  events: [
+    {
+      title: 'Immobilisation',
+      start: '2026-03-30T08:00:00',
+      end: '2026-03-30T12:30:00',
+      resourceId: 'veh-1',
+      color: '#ef4444'
+    }
+  ]
 });
 ```
 
-## API Methods
+## Interaction Handlers
 
 ```js
-cal.changeView('week');          // switch view
-cal.today();                     // go to today
-cal.prev();                      // previous period
-cal.next();                      // next period
-cal.gotoDate(new Date());        // jump to date
-
-cal.addEvent({ title, start, end, ... });    // add event → returns event
-cal.removeEvent('event-id');     // remove event
-cal.updateEvent('event-id', {title: 'New'}); // update event
-cal.getEvents();                 // → EventObject[]
-cal.getEventById('id');          // → EventObject | null
-
-cal.setOption('eventColor', '#ff0000'); // update option
-cal.destroy();                   // cleanup
+const cal = new EasyCal('#calendar', {
+  onEventClick({ event }) {
+    console.log('event', event.id, event.title);
+  },
+  onDateClick({ date }) {
+    console.log('date', date);
+  },
+  editable: true
+});
 ```
 
-## Theming
+## API
 
-EasyCal uses CSS custom properties for easy theming:
+```js
+cal.next();
+cal.prev();
+cal.today();
+cal.changeView('timeline');
 
-```css
-#calendar {
-  --ec-font:         'Your Font', sans-serif;
-  --ec-bg:           #ffffff;
-  --ec-border:       #e5e7eb;
-  --ec-text:         #111827;
-  --ec-text-muted:   #6b7280;
-  --ec-today-color:  #2563eb;
-  --ec-today-bg:     #eff6ff;
-  --ec-hover-bg:     #f3f4f6;
-  --ec-header-bg:    #f9fafb;
-  --ec-event-radius: 4px;
-}
+cal.addEvent({ title, start, end });
+cal.removeEvent('id');
+cal.updateEvent('id', { title: 'Updated' });
+cal.getEvents();
+cal.destroy();
 ```
+
+## Notes
+
+- Timeline events are positioned with:
+  - `left = ((event.start - viewStart) / viewDuration) * 100%`
+  - `width = (eventDuration / viewDuration) * 100%`
+- Timeline auto-scrolls toward the current time indicator when available.
 
 ## License
 

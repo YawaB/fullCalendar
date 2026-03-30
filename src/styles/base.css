@@ -1,0 +1,103 @@
+:root {
+  --ec-font: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ec-bg: #ffffff;
+  --ec-border: #d9dee8;
+  --ec-muted: #64748b;
+  --ec-text: #1f2937;
+  --ec-primary: #1e3a8a;
+}
+
+.easycal {
+  font-family: var(--ec-font);
+  border: 1px solid var(--ec-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.ec-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--ec-border);
+}
+
+.ec-btn {
+  border: 1px solid var(--ec-border);
+  background: #fff;
+  color: #334155;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.ec-btn-active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+
+.ec-title {
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.ec-event {
+  border-radius: 4px;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  padding: 3px 6px;
+  margin: 2px 0;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ec-popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.ec-popup-overlay.open {
+  display: flex;
+}
+
+.ec-popup {
+  background: #fff;
+  width: min(420px, 92vw);
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.ec-popup label {
+  display: block;
+  margin: 10px 0;
+  font-size: 0.8rem;
+}
+
+.ec-popup input {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ec-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ec-popup-error {
+  color: #dc2626;
+  margin-top: 8px;
+  font-size: 0.8rem;
+}

@@ -698,8 +698,9 @@
     const m = String(today.getMonth() + 1).padStart(2, '0');
 
     const cal = new EasyCal('#calendar', {
-        view: 'timeline',
-        timelineGranularity: 'month',
+        initialView: 'timeline',
+        timelineRange: 'month',
+        slotDurationMinutes: 24 * 60,
         firstDay: 1,
         headerToolbar: {
             left: 'prev,next,today',
@@ -722,13 +723,13 @@
             {title: 'Immobilisation pneu', start: `${y}-${m}-10`, end: `${y}-${m}-11`, color: '#ff4040', resourceId: 'v6'},
             {title: 'Liaison chauffeur', start: `${y}-${m}-13`, end: `${y}-${m}-15`, color: '#ff4040', resourceId: 'v4'},
         ],
-        eventClick({event}) {
+        onEventClick({event}) {
             const time = event.allDay
                 ? 'All day'
                 : event.start.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
             setLog(`eventClick → <span>${event.title}</span> · ${time}`);
         },
-        dateClick({date}) {
+        onDateClick({date}) {
             setLog(`dateClick → <span>${date.toLocaleDateString([], {
                 weekday: 'long',
                 month: 'long',

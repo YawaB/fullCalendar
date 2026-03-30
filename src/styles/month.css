@@ -1,0 +1,27 @@
+.ec-month-weekdays,
+.ec-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.ec-month-weekdays > div {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ec-border);
+  background: #fff;
+}
+
+.ec-month-cell {
+  min-height: 110px;
+  border-right: 1px solid var(--ec-border);
+  border-bottom: 1px solid var(--ec-border);
+  padding: 6px;
+  background: #fff;
+}
+
+.ec-month-cell.ec-muted { background: #f8fafc; }
+.ec-month-cell.ec-today { background: #eef2ff; }
+.ec-month-date { font-size: 0.75rem; color: #475569; margin-bottom: 6px; }
+.ec-more { font-size: 0.7rem; color: #64748b; }

@@ -1,0 +1,42 @@
+.ec-timegrid-body {
+  display: grid;
+  gap: 0;
+}
+
+.ec-cols-1 { grid-template-columns: 1fr; }
+.ec-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+
+.ec-timegrid-col {
+  border-right: 1px solid var(--ec-border);
+  background: #fff;
+}
+
+.ec-timegrid-col-head {
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 8px;
+  border-bottom: 1px solid var(--ec-border);
+  background: #f8fafc;
+}
+
+.ec-timegrid-col-head.ec-today { color: #1d4ed8; }
+
+.ec-timegrid-slots {
+  position: relative;
+  height: 960px;
+  background: repeating-linear-gradient(to bottom, #fff, #fff 39px, #e5e7eb 40px);
+}
+
+.ec-timegrid-slot { height: 40px; border-bottom: 1px solid transparent; }
+
+.ec-timegrid-event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ec-timegrid-event span { font-size: 0.65rem; opacity: .9; }
