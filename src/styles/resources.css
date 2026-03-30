@@ -1,18 +1,19 @@
-.ec-rt-resource-col {
+.ec-resource-column {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid #e5e7eb;
+  background: #fff;
+  overflow: hidden;
   position: sticky;
   left: 0;
-  z-index: 11;
-  background: #f8fafc;
-  border-right: 1px solid var(--ec-border);
-  overflow-y: auto;
+  z-index: 30;
+  box-shadow: 4px 0 8px rgba(0,0,0,.04);
 }
 
-.ec-rt-resource {
-  min-height: var(--rt-row-height);
+.ec-resource-row {
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--ec-border);
-  font-weight: 600;
-  color: #334155;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1.05rem;
+  white-space: nowrap;
 }

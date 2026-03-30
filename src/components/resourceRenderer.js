@@ -1,10 +1,5 @@
-function esc(v) {
-  return String(v)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-}
-
-export function renderResourceLabel(resource, index) {
-  return `<div class="ec-rt-resource" data-resource-id="${resource.id}" data-resource-index="${index}">${esc(resource.title)}</div>`;
+export function renderResourceColumn(resources, rowHeight) {
+  return resources
+    .map(resource => `<div class="ec-resource-row" style="height:${rowHeight}px;padding-left:${12 + resource.depth * 18}px" data-resource-id="${resource.id}">${resource.title}</div>`)
+    .join('');
 }

@@ -1,21 +1,32 @@
 import { MS, formatTime, toDate } from '../core/timeUtils.js';
 
-export function buildTimelineSlots(viewStart, viewEnd, options = {}) {
-  const slotMinutes = options.slotDurationMinutes || 60;
-  const slotMs = slotMinutes * MS.minute;
-  const locale = options.locale || 'default';
-  const formatter = options.slotLabelFormat;
-
+export function buildAxis(viewStart, viewEnd, slotDurationMinutes, mode, locale) {
   const slots = [];
+  const slotMs = slotDurationMinutes * MS.minute;
   let cursor = toDate(viewStart);
+
   while (cursor < viewEnd) {
-    const label = typeof formatter === 'function' ? formatter(cursor) : formatTime(cursor, locale);
-    slots.push({ date: new Date(cursor), label });
-    cursor = new Date(cursor.getTime() + slotMs);
+    const start = new Date(cursor);
+    const end = new Date(cursor.getTime() + slotMs);
+    let label = '';
+
+    if (mode === 'resourceTimelineDay') {
+      label = formatTime(start, locale).replace(':00', '');
+    } else if (mode === 'resourceTimelineWeek') {
+      label = start.toLocaleDateString(locale, { weekday: 'short', month: 'numeric', day: 'numeric' });
+    } else {
+      label = String(start.getDate());
+    }
+
+    slots.push({ start, end, label });
+    cursor = end;
   }
+
   return slots;
 }
 
-export function renderTimelineAxis(slots) {
-  return `<div class="ec-rt-axis">${slots.map(slot => `<div class="ec-rt-axis-slot" data-date="${slot.date.toISOString()}">${slot.label}</div>`).join('')}</div>`;
+export function renderAxis(slots, slotWidth) {
+  return slots
+    .map(slot => `<div class="ec-time-slot" style="width:${slotWidth}px" data-date="${slot.start.toISOString()}">${slot.label}</div>`)
+    .join('');
 }

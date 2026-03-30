@@ -1,34 +1,48 @@
 import { clamp } from '../core/timeUtils.js';
 
-export function positionEventsByResource(events, resources, viewStart, viewEnd, rowHeight = 68) {
+export function layoutEvents({ events, resources, viewStart, viewEnd, rowHeight, laneHeight, laneGap, timelineWidth }) {
   const totalMs = Math.max(viewEnd - viewStart, 1);
+  const byResource = new Map(resources.map((r, i) => [r.id, { resource: r, index: i, events: [] }]));
+
+  events.forEach(event => {
+    const bucket = byResource.get(event.resourceId);
+    if (bucket) bucket.events.push(event);
+  });
+
   const positioned = [];
 
-  resources.forEach((resource, resourceIndex) => {
-    const rowEvents = events
-      .filter(event => event.resourceId === resource.id)
-      .sort((a, b) => a.start - b.start || a.end - b.end);
-
-    const lanes = [];
+  byResource.forEach(({ index, events: rowEvents }) => {
+    rowEvents.sort((a, b) => a.start - b.start || a.end - b.end);
+    const laneEnds = [];
 
     rowEvents.forEach(event => {
       const visibleStart = event.start < viewStart ? viewStart : event.start;
       const visibleEnd = event.end > viewEnd ? viewEnd : event.end;
       if (visibleEnd <= visibleStart) return;
 
-      let laneIndex = lanes.findIndex(laneEnd => laneEnd <= visibleStart);
-      if (laneIndex === -1) {
-        laneIndex = lanes.length;
-        lanes.push(visibleEnd);
+      let lane = laneEnds.findIndex(end => end <= visibleStart);
+      if (lane === -1) {
+        lane = laneEnds.length;
+        laneEnds.push(visibleEnd);
       } else {
-        lanes[laneIndex] = visibleEnd;
+        laneEnds[lane] = visibleEnd;
       }
 
-      const left = clamp(((visibleStart - viewStart) / totalMs) * 100, 0, 100);
-      const width = clamp(((visibleEnd - visibleStart) / totalMs) * 100, 0.5, 100 - left);
-      const top = resourceIndex * rowHeight + laneIndex * 26 + 8;
+      const startRatio = clamp((visibleStart - viewStart) / totalMs, 0, 1);
+      const endRatio = clamp((visibleEnd - viewStart) / totalMs, 0, 1);
 
-      positioned.push({ event, left, width, top, laneIndex, resourceIndex });
+      const leftPx = startRatio * timelineWidth;
+      const widthPx = Math.max((endRatio - startRatio) * timelineWidth, 12);
+      const topPx = index * rowHeight + 6 + lane * (laneHeight + laneGap);
+
+      positioned.push({
+        event,
+        lane,
+        leftPx,
+        widthPx,
+        topPx,
+        compact: lane >= 4,
+      });
     });
   });
 

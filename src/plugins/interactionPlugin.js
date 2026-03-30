@@ -1,29 +1,29 @@
 import { MS } from '../core/timeUtils.js';
 
 export default function interactionPlugin(calendar) {
-  function bindDateClicks(root) {
-    root.querySelectorAll('[data-date]').forEach(el => {
-      el.onclick = jsEvent => {
-        const payload = {
-          date: new Date(el.dataset.date),
-          resourceId: el.dataset.resourceId || null,
-          el,
-          jsEvent,
-        };
-        calendar.options.onDateClick?.(payload);
-        if (calendar.popupApi && el.classList.contains('ec-rt-cell')) {
-          calendar.popupApi.open(payload.date, payload.resourceId);
-        }
+  function parseCell(cell) {
+    return {
+      date: new Date(cell.dataset.date),
+      resourceId: cell.dataset.resourceId,
+    };
+  }
+
+  function bindCellClicks(root) {
+    root.querySelectorAll('.ec-grid-cell').forEach(cell => {
+      cell.onclick = e => {
+        const { date, resourceId } = parseCell(cell);
+        calendar.options.onDateClick?.({ date, resourceId, el: cell, jsEvent: e });
+        if (calendar.popupApi) calendar.popupApi.open(date, resourceId);
       };
     });
   }
 
   function bindEventClicks(root) {
-    root.querySelectorAll('[data-event-id]').forEach(el => {
-      el.onclick = jsEvent => {
-        jsEvent.stopPropagation();
+    root.querySelectorAll('.ec-event').forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
         const event = calendar.eventModel.byId(el.dataset.eventId);
-        if (event) calendar.options.onEventClick?.({ event, el, jsEvent });
+        if (event) calendar.options.onEventClick?.({ event, el, jsEvent: e });
       };
     });
   }
@@ -31,12 +31,13 @@ export default function interactionPlugin(calendar) {
   function bindDrag(root) {
     if (!calendar.options.editable) return;
 
-    root.querySelectorAll('.ec-rt-event').forEach(el => {
-      el.setAttribute('draggable', 'true');
-      el.ondragstart = e => e.dataTransfer.setData('event-id', el.dataset.eventId);
+    root.querySelectorAll('.ec-event').forEach(el => {
+      el.ondragstart = ev => {
+        ev.dataTransfer.setData('event-id', el.dataset.eventId);
+      };
     });
 
-    root.querySelectorAll('.ec-rt-cell').forEach(cell => {
+    root.querySelectorAll('.ec-grid-cell').forEach(cell => {
       cell.ondragover = e => e.preventDefault();
       cell.ondrop = e => {
         e.preventDefault();
@@ -44,41 +45,47 @@ export default function interactionPlugin(calendar) {
         const event = calendar.eventModel.byId(id);
         if (!event) return;
 
-        const start = new Date(cell.dataset.date);
-        const end = new Date(start.getTime() + (event.end - event.start));
-        const updated = calendar.updateEvent(id, { start, end, resourceId: cell.dataset.resourceId });
-        if (updated) calendar.options.eventDrag?.({ event: updated, date: start, resourceId: cell.dataset.resourceId });
+        const { date, resourceId } = parseCell(cell);
+        const duration = event.end - event.start;
+        const updated = calendar.updateEvent(id, {
+          start: date,
+          end: new Date(date.getTime() + duration),
+          resourceId,
+        });
+
+        if (updated) calendar.options.eventDrag?.({ event: updated, date, resourceId });
       };
     });
   }
 
   function bindResize(root) {
     if (!calendar.options.editable) return;
+    const metrics = calendar._viewMetrics;
+    if (!metrics) return;
 
-    root.querySelectorAll('.ec-rt-event').forEach(el => {
-      const handle = document.createElement('span');
-      handle.className = 'ec-rt-resize-handle';
-      el.appendChild(handle);
+    root.querySelectorAll('.ec-resize-handle').forEach(handle => {
+      handle.onmousedown = startEvent => {
+        startEvent.preventDefault();
+        startEvent.stopPropagation();
 
-      handle.onmousedown = startEvt => {
-        startEvt.stopPropagation();
-        startEvt.preventDefault();
-        const id = el.dataset.eventId;
-        const original = calendar.eventModel.byId(id);
+        const eventEl = handle.closest('.ec-event');
+        const eventId = eventEl.dataset.eventId;
+        const original = calendar.eventModel.byId(eventId);
         if (!original) return;
 
-        const startX = startEvt.clientX;
-        const startEnd = original.end;
+        const originX = startEvent.clientX;
+        const originEnd = original.end;
+        const pxPerMs = metrics.timelineWidth / (metrics.viewEnd - metrics.viewStart || 1);
 
-        const move = moveEvt => {
-          const deltaPx = moveEvt.clientX - startX;
-          const slotWidth = 80;
-          const slotMinutes = calendar.options.slotDurationMinutes || 60;
-          const deltaMinutes = Math.round(deltaPx / slotWidth) * slotMinutes;
-          const newEnd = new Date(startEnd.getTime() + deltaMinutes * MS.minute);
+        const move = moveEvent => {
+          const deltaPx = moveEvent.clientX - originX;
+          const deltaMs = deltaPx / pxPerMs;
+          const snappedMs = Math.round(deltaMs / (metrics.slotDurationMinutes * MS.minute)) * metrics.slotDurationMinutes * MS.minute;
+          const newEnd = new Date(originEnd.getTime() + snappedMs);
           if (newEnd <= original.start) return;
-          calendar.updateEvent(id, { end: newEnd });
-          calendar.options.eventResize?.({ event: calendar.eventModel.byId(id), end: newEnd });
+
+          const updated = calendar.updateEvent(eventId, { end: newEnd });
+          if (updated) calendar.options.eventResize?.({ event: updated, end: newEnd });
         };
 
         const up = () => {
@@ -93,11 +100,11 @@ export default function interactionPlugin(calendar) {
   }
 
   return {
-    bind(rootEl) {
-      bindDateClicks(rootEl);
-      bindEventClicks(rootEl);
-      bindDrag(rootEl);
-      bindResize(rootEl);
+    bind(root) {
+      bindCellClicks(root);
+      bindEventClicks(root);
+      bindDrag(root);
+      bindResize(root);
     },
   };
 }
