@@ -7,7 +7,7 @@ import { renderResourceColumn } from '../components/resourceRenderer.js';
 function resolveRange(date, viewName, firstDay) {
   if (viewName === 'resourceTimelineWeek') {
     const start = startOfWeek(date, firstDay);
-    return { viewStart: start, viewEnd: endOfWeek(start, firstDay), slotDurationMinutes: 24 * 60 };
+    return { viewStart: start, viewEnd: endOfWeek(start, firstDay), slotDurationMinutes: 60 };
   }
   if (viewName === 'resourceTimelineMonth') {
     const start = startOfMonth(date);
@@ -29,10 +29,11 @@ export default function resourceTimelineView(calendar) {
   const laneGap = 3;
 
   const { viewStart, viewEnd, slotDurationMinutes } = resolveRange(currentDate, currentView, options.firstDay);
-  const slotWidth = currentView === 'resourceTimelineDay' ? 92 : 72;
+  const slotWidth = currentView === 'resourceTimelineDay' ? 92 : currentView === 'resourceTimelineWeek' ? 42 : 72;
 
   const slots = buildAxis(viewStart, addDays(viewEnd, currentView === 'resourceTimelineMonth' ? 1 : 0), slotDurationMinutes, currentView, options.locale);
-  const timelineWidth = slots.length * slotWidth;
+  const timelineWidth = Math.max(slots.length * slotWidth, currentView === 'resourceTimelineWeek' ? 2400 : 0);
+  const headerHeight = currentView === 'resourceTimelineWeek' ? 68 : 36;
   const events = eventModel.inRange(viewStart, viewEnd);
 
   const positioned = layoutEvents({
@@ -69,9 +70,9 @@ export default function resourceTimelineView(calendar) {
     <div class="ec-body">
       <div class="ec-resource-column">${renderResourceColumn(resources, rowHeight)}</div>
       <div class="ec-timeline" data-timeline-root="1">
-        <div class="ec-time-header" style="width:${timelineWidth}px">${renderAxis(slots, slotWidth)}</div>
+        <div class="ec-time-header" style="width:${timelineWidth}px">${renderAxis(slots, slotWidth, currentView)}</div>
         <div class="ec-grid" style="width:${timelineWidth}px">${gridRows}</div>
-        <div class="ec-events-layer" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px">${positioned.map(item => renderTimelineEvent(item, options)).join('')}${nowIndicator}</div>
+        <div class="ec-events-layer" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px;top:${headerHeight}px">${positioned.map(item => renderTimelineEvent(item, options)).join('')}${nowIndicator}</div>
       </div>
     </div>
   `;
