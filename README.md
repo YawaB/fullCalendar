@@ -21,6 +21,17 @@ pnpm install
 pnpm build
 ```
 
+If you hit missing-module errors from Rollup/TypeScript bins, use Node LTS (20.x) and do a clean reinstall:
+
+```bash
+nvm use 20.19.0
+rm -rf node_modules packages/*/node_modules pnpm-lock.yaml
+pnpm store prune
+pnpm install
+pnpm --filter @brinda_yawa/easycal build
+pnpm --filter @brinda_yawa/easycal-react build
+```
+
 ## React wrapper usage
 
 ```tsx
