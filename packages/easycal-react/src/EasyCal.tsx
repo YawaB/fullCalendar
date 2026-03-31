@@ -1,7 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
 import EasyCalCore from '@brinda_yawa/easycal';
-import type { EasyCalOptions } from '@brinda_yawa/easycal';
-
+import EasyCalOptions from "@brinda_yawa/easycal"
 export type EasyCalEventInfo = {
   date?: Date;
   resourceId?: string | null;
