@@ -32,6 +32,8 @@ pnpm --filter @brinda_yawa/easycal build
 pnpm --filter @brinda_yawa/easycal-react build
 ```
 
+The workspace now enforces Node 20.x during install (`preinstall` + `engine-strict`) so unsupported versions such as Node 23 fail fast with a clear recovery message.
+
 ## React wrapper usage
 
 ```tsx
