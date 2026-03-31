@@ -1,84 +1,48 @@
-# EasyCal
+# EasyCal Monorepo
 
-EasyCal supports two independent rendering systems:
+This repository is now a workspace monorepo with two publishable packages:
 
-- `mode: 'standard'` → classic calendar (`month`, `week`, `day`)
-- `mode: 'timeline'` → resource timeline (`resourceTimelineDay`, `resourceTimelineWeek`, `resourceTimelineMonth`)
+- `@brinda_yawa/easycal` (framework-agnostic core)
+- `@brinda_yawa/easycal-react` (React wrapper)
 
-## Basic usage
+## Workspace layout
 
-```js
-const cal = new EasyCal('#calendar', {
-  mode: 'standard', // default
-  defaultView: 'month',
-  events: []
-});
+```txt
+packages/
+  core/            # @brinda_yawa/easycal
+  easycal-react/   # @brinda_yawa/easycal-react
+pnpm-workspace.yaml
 ```
 
-## Timeline usage
+## Install (workspace)
 
-```js
-const cal = new EasyCal('#calendar', {
-  mode: 'timeline',
-  defaultView: 'resourceTimelineDay',
-  resources: [
-    { id: 'room-1', title: 'Room A' },
-    { id: 'room-2', title: 'Room B' }
-  ],
-  events: [
-    {
-      id: '1',
-      title: 'Meeting',
-      start: '2026-03-30T10:00:00',
-      end: '2026-03-30T11:30:00',
-      resourceId: 'room-1'
-    }
-  ]
-});
+```bash
+pnpm install
+pnpm build
 ```
 
-## Config
+## React wrapper usage
 
-```js
-{
-  mode: 'standard' | 'timeline',
-  defaultView: 'month' | 'week' | 'day' | 'resourceTimelineDay' | 'resourceTimelineWeek' | 'resourceTimelineMonth',
-  views: {
-    month: {},
-    week: {},
-    day: {},
-    resourceTimelineDay: {},
-    resourceTimelineWeek: {},
-    resourceTimelineMonth: {}
-  },
-  events: [],
-  resources: [],
-  editable: true,
-  onEventClick: fn,
-  onDateClick: fn,
-  slotMinTime: '00:00:00',
-  slotMaxTime: '24:00:00'
+```tsx
+import { EasyCal } from '@brinda_yawa/easycal-react';
+
+export function CalendarPage() {
+  return (
+    <EasyCal
+      mode="timeline"
+      defaultView="resourceTimelineWeek"
+      events={[]}
+      resources={[]}
+      dateClick={(info) => console.log(info)}
+      eventClick={(info) => console.log(info)}
+      eventDrop={(info) => console.log(info)}
+      eventResize={(info) => console.log(info)}
+    />
+  );
 }
-```
-
-## API
-
-```js
-cal.addEvent(event)
-cal.removeEvent(id)
-cal.updateEvent(id, patch)
-cal.getEvents()
-cal.changeView(viewName)
-cal.next()
-cal.prev()
-cal.today()
-cal.destroy()
 ```
 
 ## Notes
 
-- Toolbar always includes `prev`, `next`, and `Today`.
-- In `standard` mode, `resourceId` is ignored.
-- In `timeline` mode, events are positioned by both time and `resourceId`.
-- Clicking empty cells triggers `onDateClick` and opens create popup (prefilled start/end/resource).
-- Clicking events triggers `onEventClick` and opens edit popup.
+- Core stays framework-agnostic.
+- React package is a thin adapter around the core instance lifecycle.

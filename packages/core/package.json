@@ -1,0 +1,35 @@
+{
+  "name": "@brinda_yawa/easycal",
+  "version": "1.0.0",
+  "description": "A lightweight, zero-dependency JavaScript calendar library",
+  "type": "module",
+  "main": "dist/easycal.cjs",
+  "module": "dist/easycal.esm.js",
+  "browser": "dist/easycal.umd.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/easycal.esm.js",
+      "require": "./dist/easycal.cjs"
+    },
+    "./style.css": "./dist/easycal.css"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "npm run build",
+    "test": "node --env-file=.env src/tests/index.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.0.0",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}

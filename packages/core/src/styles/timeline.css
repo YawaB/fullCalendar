@@ -1,0 +1,105 @@
+.ec-timeline {
+  position: relative;
+  overflow: auto;
+  flex: 1;
+  background: #fff;
+}
+
+.ec-time-header {
+  position: sticky;
+  top: 0;
+  display: block;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ec-time-header-top,
+.ec-time-header-bottom {
+  display: flex;
+}
+
+.ec-time-header-top {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ec-day-slot {
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  border-right: 1px solid #e5e7eb;
+  font-weight: 700;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.ec-time-slot {
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  border-right: 1px solid #e5e7eb;
+  font-weight: 700;
+  font-size: .82rem;
+  color: #111827;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+.ec-grid { position: relative; }
+
+.ec-grid-row {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ec-grid-cell {
+  border-right: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.ec-grid-cell:hover { background: #f8fafc; }
+
+.ec-events-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.ec-event {
+  position: absolute;
+  height: 22px;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: .78rem;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.ec-event-compact { opacity: .86; }
+
+.ec-event-title { display: block; overflow: hidden; text-overflow: ellipsis; }
+
+.ec-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+.ec-now-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ef4444;
+  z-index: 5;
+  pointer-events: none;
+}
