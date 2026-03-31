@@ -1,9 +1,10 @@
-# Easy cal-react
+# EasyCal
 # @brinda_yawa/easycal-react
 
 React wrapper for `@brinda_yawa/easycal`.
 
 ## Install
+## Installation
 
 ```bash
 npm install @brinda_yawa/easycal @brinda_yawa/easycal-react
@@ -12,6 +13,7 @@ npm install @brinda_yawa/easycal @brinda_yawa/easycal-react
 > `react` and `react-dom` 18+ are required peer dependencies.
 
 ## Usage (JavaScript)
+## Usage
 
 ```jsx
 import { EasyCal } from '@brinda_yawa/easycal-react';
@@ -43,7 +45,6 @@ export default function CalendarPage() {
   );
 }
 ```
-
 ## TypeScript
 
 Type definitions are published with the package (`dist/index.d.ts`).
@@ -68,3 +69,5 @@ pnpm --filter @brinda_yawa/easycal-react build
 ```
 
 ## License
+
+MIT
