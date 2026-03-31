@@ -21,7 +21,7 @@
     "*.css"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.js",
+    "build": "rollup -c",
     "clean": "rm -rf dist"
   },
   "license": "MIT",

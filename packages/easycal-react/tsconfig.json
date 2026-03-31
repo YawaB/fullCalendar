@@ -8,7 +8,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@brinda_yawa/easycal": ["../core/src/index.js"]
+      "@brinda_yawa/easycal": ["../core/src/index.ts"]
     }
   },
   "include": ["src"]

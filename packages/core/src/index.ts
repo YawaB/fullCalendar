@@ -1,3 +1,11 @@
+import './styles/base.css';
+import './styles/timeline.css';
+import './styles/resources.css';
+import './styles/month.css';
+import './styles/timegrid.css';
+
+import CalendarCore from './core/calendarCore.js';
+
 export type EasyCalEvent = {
   id?: string;
   title: string;
@@ -28,16 +36,10 @@ export type EasyCalOptions = {
   [key: string]: any;
 };
 
-export default class EasyCal {
-  constructor(el: string | HTMLElement, options?: EasyCalOptions);
-  setOptions(options: EasyCalOptions): void;
-  addEvent(event: EasyCalEvent): EasyCalEvent;
-  removeEvent(id: string): void;
-  updateEvent(id: string, patch: Partial<EasyCalEvent>): EasyCalEvent | null;
-  getEvents(): EasyCalEvent[];
-  next(): void;
-  prev(): void;
-  today(): void;
-  changeView(view: string): void;
-  destroy(): void;
+class EasyCal extends (CalendarCore as any) {}
+
+if (typeof window !== 'undefined') {
+  (window as any).EasyCal = EasyCal;
 }
+
+export default EasyCal;
