@@ -1,3 +1,4 @@
+# Easy cal-react
 # @brinda_yawa/easycal-react
 
 React wrapper for `@brinda_yawa/easycal`.

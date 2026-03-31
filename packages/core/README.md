@@ -1,13 +1,27 @@
 # EasyCal
+# @brinda_yawa/easycal
 
 EasyCal supports two independent rendering systems:
+A lightweight, zero-dependency JavaScript calendar library with two rendering modes:
 
 - `mode: 'standard'` → classic calendar (`month`, `week`, `day`)
 - `mode: 'timeline'` → resource timeline (`resourceTimelineDay`, `resourceTimelineWeek`, `resourceTimelineMonth`)
+- `standard` mode for classic calendar views (`month`, `week`, `day`)
+- `timeline` mode for resource timeline views (`resourceTimelineDay`, `resourceTimelineWeek`, `resourceTimelineMonth`)
 
 ## Basic usage
+## Installation
+
+```bash
+npm install @brinda_yawa/easycal
+```
+
+## Quick start
 
 ```js
+import EasyCal from '@brinda_yawa/easycal';
+import '@brinda_yawa/easycal/style.css';
+
 const cal = new EasyCal('#calendar', {
   mode: 'standard', // default
   defaultView: 'month',
@@ -16,6 +30,7 @@ const cal = new EasyCal('#calendar', {
 ```
 
 ## Timeline usage
+## Timeline example
 
 ```js
 const cal = new EasyCal('#calendar', {
@@ -38,6 +53,7 @@ const cal = new EasyCal('#calendar', {
 ```
 
 ## Config
+## Common options
 
 ```js
 {
@@ -76,6 +92,7 @@ cal.destroy()
 ```
 
 ## Notes
+## License
 
 - Toolbar always includes `prev`, `next`, and `Today`.
 - In `standard` mode, `resourceId` is ignored.
