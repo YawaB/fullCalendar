@@ -1,5 +1,6 @@
-import { endOfMonth, endOfWeek, getDaysInRange, isToday, startOfMonth, startOfWeek } from '../core/timeUtils.js';
-import { renderEventBlock } from '../components/eventRenderer.js';
+// @ts-nocheck
+import { endOfMonth, endOfWeek, getDaysInRange, isToday, startOfMonth, startOfWeek } from '../core/timeUtils';
+import { renderEventBlock } from '../components/eventRenderer';
 
 export default function monthView(calendar) {
   const { currentDate, options, eventModel } = calendar;

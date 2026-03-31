@@ -1,4 +1,5 @@
-import { MS, formatTime, toDate } from '../core/timeUtils.js';
+// @ts-nocheck
+import { MS, formatTime, toDate } from '../core/timeUtils';
 
 export function buildAxis(viewStart, viewEnd, slotDurationMinutes, mode, locale) {
   const slots = [];

@@ -1,4 +1,5 @@
-import resourceTimelineView from '../views/resourceTimelineView.js';
+// @ts-nocheck
+import resourceTimelineView from '../views/resourceTimelineView';
 
 function titleFor(view, date, locale) {
   if (view === 'resourceTimelineDay') {

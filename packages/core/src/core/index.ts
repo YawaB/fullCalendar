@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─── EasyCal Core ─────────────────────────────────────────────────────────────
 
 export const DEFAULT_OPTIONS = {

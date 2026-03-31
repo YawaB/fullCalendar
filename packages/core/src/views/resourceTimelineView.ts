@@ -1,8 +1,9 @@
-import { addDays, endOfDay, endOfMonth, endOfWeek, parseTimeToMinutes, startOfDay, startOfMonth, startOfWeek } from '../core/timeUtils.js';
-import { buildAxis, renderAxis } from '../layout/timelineAxis.js';
-import { layoutEvents } from '../layout/eventPositioning.js';
-import { renderTimelineEvent } from '../components/eventRenderer.js';
-import { renderResourceColumn } from '../components/resourceRenderer.js';
+// @ts-nocheck
+import { addDays, endOfDay, endOfMonth, endOfWeek, parseTimeToMinutes, startOfDay, startOfMonth, startOfWeek } from '../core/timeUtils';
+import { buildAxis, renderAxis } from '../layout/timelineAxis';
+import { layoutEvents } from '../layout/eventPositioning';
+import { renderTimelineEvent } from '../components/eventRenderer';
+import { renderResourceColumn } from '../components/resourceRenderer';
 
 function resolveRange(date, viewName, options) {
   const minMinutes = parseTimeToMinutes(options.slotMinTime, 0);

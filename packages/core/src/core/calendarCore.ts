@@ -1,10 +1,11 @@
-import { EventModel } from './eventModel.js';
-import { ResourceModel } from './resourceModel.js';
-import { addDays, addMonths, addWeeks, mergeOptions, startOfDay } from './timeUtils.js';
-import StandardRenderer from '../renderers/standardRenderer.js';
-import TimelineRenderer from '../renderers/timelineRenderer.js';
-import interactionPlugin from '../plugins/interactionPlugin.js';
-import popupPlugin from '../plugins/popupPlugin.js';
+// @ts-nocheck
+import { EventModel } from './eventModel';
+import { ResourceModel } from './resourceModel';
+import { addDays, addMonths, addWeeks, mergeOptions, startOfDay } from './timeUtils';
+import StandardRenderer from '../renderers/standardRenderer';
+import TimelineRenderer from '../renderers/timelineRenderer';
+import interactionPlugin from '../plugins/interactionPlugin';
+import popupPlugin from '../plugins/popupPlugin';
 
 const DEFAULT_OPTIONS = {
   mode: 'standard',

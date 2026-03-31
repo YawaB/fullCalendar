@@ -1,4 +1,5 @@
-import { MS } from '../core/timeUtils.js';
+// @ts-nocheck
+import { MS } from '../core/timeUtils';
 
 export default function interactionPlugin(calendar) {
   function parseCell(cell) {

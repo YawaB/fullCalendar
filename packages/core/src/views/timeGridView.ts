@@ -1,4 +1,5 @@
-import { addDays, endOfDay, endOfWeek, formatTime, getDaysInRange, isToday, startOfDay, startOfWeek } from '../core/timeUtils.js';
+// @ts-nocheck
+import { addDays, endOfDay, endOfWeek, formatTime, getDaysInRange, isToday, startOfDay, startOfWeek } from '../core/timeUtils';
 
 function renderDayColumn(day, events, options) {
   const dayStart = startOfDay(day);

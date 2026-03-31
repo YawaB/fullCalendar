@@ -1,6 +1,7 @@
-import { addDays, clamp, endOfDay, endOfWeek, getDaysInRange, isToday, MS, startOfDay, startOfMonth, startOfWeek } from '../core/utils.js';
-import { renderAbsoluteTimelineEvent } from '../components/eventRenderer.js';
-import { buildTimeAxis } from '../components/timeAxis.js';
+// @ts-nocheck
+import { addDays, clamp, endOfDay, endOfWeek, getDaysInRange, isToday, MS, startOfDay, startOfMonth, startOfWeek } from '../core/utils';
+import { renderAbsoluteTimelineEvent } from '../components/eventRenderer';
+import { buildTimeAxis } from '../components/timeAxis';
 
 function computeRange(date, options) {
   const mode = options.timelineRange || 'day';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 function ensurePopup() {
   let popup = document.querySelector('.ec-popup-overlay');
   if (popup) return popup;

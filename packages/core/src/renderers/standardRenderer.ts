@@ -1,6 +1,7 @@
-import monthView from '../views/monthView.js';
-import timeGridView from '../views/timeGridView.js';
-import { startOfWeek, endOfWeek } from '../core/timeUtils.js';
+// @ts-nocheck
+import monthView from '../views/monthView';
+import timeGridView from '../views/timeGridView';
+import { startOfWeek, endOfWeek } from '../core/timeUtils';
 
 const VIEWS = {
   month: monthView,

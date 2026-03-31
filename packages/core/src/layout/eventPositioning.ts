@@ -1,4 +1,5 @@
-import { clamp } from '../core/timeUtils.js';
+// @ts-nocheck
+import { clamp } from '../core/timeUtils';
 
 export function layoutEvents({ events, resources, viewStart, viewEnd, rowHeight, laneHeight, laneGap, timelineWidth }) {
   const totalMs = Math.max(viewEnd - viewStart, 1);

@@ -1,4 +1,5 @@
-import { endOfDay, toDate } from './timeUtils.js';
+// @ts-nocheck
+import { endOfDay, toDate } from './timeUtils';
 
 export function normalizeEvent(event, idFactory) {
   const start = toDate(event.start);

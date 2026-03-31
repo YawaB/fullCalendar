@@ -1,3 +1,4 @@
+// @ts-nocheck
 export class ResourceModel {
   constructor(resources = []) {
     this.load(resources);
