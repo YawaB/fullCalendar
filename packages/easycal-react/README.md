@@ -1,4 +1,4 @@
-# @brinda_yawa/easycal-react
+# EASY CALENDAR REACT
 
 React wrapper for `@brinda_yawa/easycal`.
 

@@ -1,11 +1,12 @@
 {
   "name": "@brinda_yawa/easycal-react",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "dependencies": {
     "@brinda_yawa/easycal": "^1.0.0"

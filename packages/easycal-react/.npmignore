@@ -6,7 +6,7 @@ rollup.config.cjs
 tsconfig.json
 server.js
 demo/
-package.json
+
 
 # IDE
 .idea/
