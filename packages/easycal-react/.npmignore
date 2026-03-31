@@ -1,0 +1,19 @@
+# Development
+src
+
+package-lock.json
+rollup.config.cjs
+tsconfig.json
+server.js
+demo/
+package.json
+
+# IDE
+.idea/
+# Build tools
+node_modules/
+.cache/
+
+# Misc
+*.log
+.env

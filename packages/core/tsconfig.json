@@ -3,14 +3,19 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "declaration": true,
     "declarationDir": "dist",
     "outDir": "dist",
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": true,
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "."
+    //
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
