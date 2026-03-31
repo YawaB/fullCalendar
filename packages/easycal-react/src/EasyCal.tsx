@@ -1,5 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
 import EasyCalCore from '@brinda_yawa/easycal';
+import type { EasyCalOptions } from '@brinda_yawa/easycal';
 
 export type EasyCalEventInfo = {
   date?: Date;
@@ -8,14 +9,13 @@ export type EasyCalEventInfo = {
   [key: string]: unknown;
 };
 
-export type EasyCalProps = {
+export type EasyCalProps = EasyCalOptions & {
   className?: string;
   style?: CSSProperties;
   dateClick?: (info: EasyCalEventInfo) => void;
   eventClick?: (info: EasyCalEventInfo) => void;
   eventDrop?: (info: EasyCalEventInfo) => void;
   eventResize?: (info: EasyCalEventInfo) => void;
-  [key: string]: unknown;
 };
 
 export default function EasyCal(props: EasyCalProps) {

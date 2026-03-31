@@ -4,13 +4,19 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@brinda_yawa/easycal": "workspace:*"
+  },
   "peerDependencies": {
     "react": ">=18",
-    "react-dom": ">=18",
-    "@brinda_yawa/easycal": "*"
+    "react-dom": ">=18"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && cp dist/index.js dist/index.mjs"
+    "build": "tsc -p tsconfig.json && cp dist/index.js dist/index.mjs",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "typescript": "^5.6.0",
