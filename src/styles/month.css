@@ -18,7 +18,8 @@
   border-right: 1px solid var(--ec-border);
   border-bottom: 1px solid var(--ec-border);
   padding: 6px;
-  background: #fff;
+    background: #fff;
+    cursor: pointer;
 }
 
 .ec-month-cell.ec-muted { background: #f8fafc; }

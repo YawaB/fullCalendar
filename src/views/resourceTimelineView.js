@@ -1,13 +1,20 @@
-import { addDays, endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from '../core/timeUtils.js';
+import { addDays, endOfDay, endOfMonth, endOfWeek, parseTimeToMinutes, startOfDay, startOfMonth, startOfWeek } from '../core/timeUtils.js';
 import { buildAxis, renderAxis } from '../layout/timelineAxis.js';
 import { layoutEvents } from '../layout/eventPositioning.js';
 import { renderTimelineEvent } from '../components/eventRenderer.js';
 import { renderResourceColumn } from '../components/resourceRenderer.js';
 
-function resolveRange(date, viewName, firstDay) {
+function resolveRange(date, viewName, options) {
+  const minMinutes = parseTimeToMinutes(options.slotMinTime, 0);
+  const maxMinutes = parseTimeToMinutes(options.slotMaxTime, 24 * 60);
   if (viewName === 'resourceTimelineWeek') {
-    const start = startOfWeek(date, firstDay);
-    return { viewStart: start, viewEnd: endOfWeek(start, firstDay), slotDurationMinutes: 60 };
+    const start = startOfWeek(date, options.firstDay);
+    const viewStart = new Date(start);
+    viewStart.setHours(Math.floor(minMinutes / 60), minMinutes % 60, 0, 0);
+    const weekEnd = endOfWeek(start, options.firstDay);
+    const viewEnd = new Date(weekEnd);
+    viewEnd.setHours(Math.floor((maxMinutes - 1) / 60), (maxMinutes - 1) % 60, 59, 999);
+    return { viewStart, viewEnd, slotDurationMinutes: 60 };
   }
   if (viewName === 'resourceTimelineMonth') {
     const start = startOfMonth(date);
@@ -15,9 +22,13 @@ function resolveRange(date, viewName, firstDay) {
   }
 
   const start = startOfDay(date);
-  start.setHours(6, 0, 0, 0);
+  const minHours = Math.floor(minMinutes / 60);
+  const minMins = minMinutes % 60;
+  const maxHours = Math.floor(maxMinutes / 60);
+  const maxMins = maxMinutes % 60;
+  start.setHours(minHours, minMins, 0, 0);
   const end = new Date(start);
-  end.setHours(18, 0, 0, 0);
+  end.setHours(maxHours, maxMins, 0, 0);
   return { viewStart: start, viewEnd: end, slotDurationMinutes: 60 };
 }
 
@@ -28,7 +39,7 @@ export default function resourceTimelineView(calendar) {
   const laneHeight = 20;
   const laneGap = 3;
 
-  const { viewStart, viewEnd, slotDurationMinutes } = resolveRange(currentDate, currentView, options.firstDay);
+  const { viewStart, viewEnd, slotDurationMinutes } = resolveRange(currentDate, currentView, options);
   const slotWidth = currentView === 'resourceTimelineDay' ? 92 : currentView === 'resourceTimelineWeek' ? 42 : 72;
 
   const slots = buildAxis(viewStart, addDays(viewEnd, currentView === 'resourceTimelineMonth' ? 1 : 0), slotDurationMinutes, currentView, options.locale);

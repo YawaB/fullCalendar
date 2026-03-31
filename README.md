@@ -55,7 +55,9 @@ const cal = new EasyCal('#calendar', {
   resources: [],
   editable: true,
   onEventClick: fn,
-  onDateClick: fn
+  onDateClick: fn,
+  slotMinTime: '00:00:00',
+  slotMaxTime: '24:00:00'
 }
 ```
 
@@ -78,3 +80,5 @@ cal.destroy()
 - Toolbar always includes `prev`, `next`, and `Today`.
 - In `standard` mode, `resourceId` is ignored.
 - In `timeline` mode, events are positioned by both time and `resourceId`.
+- Clicking empty cells triggers `onDateClick` and opens create popup (prefilled start/end/resource).
+- Clicking events triggers `onEventClick` and opens edit popup.

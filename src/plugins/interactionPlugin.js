@@ -9,7 +9,9 @@ export default function interactionPlugin(calendar) {
   }
 
   function bindCellClicks(root) {
-    root.querySelectorAll('.ec-grid-cell').forEach(cell => {
+    root.querySelectorAll('.ec-grid-cell, [data-date]').forEach(cell => {
+      if (cell.closest('.ec-event')) return;
+      if (cell.classList.contains('ec-time-slot') || cell.classList.contains('ec-timegrid-col-head')) return;
       cell.onclick = e => {
         const { date, resourceId } = parseCell(cell);
         calendar.options.onDateClick?.({ date, resourceId, el: cell, jsEvent: e });
@@ -23,7 +25,10 @@ export default function interactionPlugin(calendar) {
       el.onclick = e => {
         e.stopPropagation();
         const event = calendar.eventModel.byId(el.dataset.eventId);
-        if (event) calendar.options.onEventClick?.({ event, el, jsEvent: e });
+        if (event) {
+          calendar.options.onEventClick?.({ event, el, jsEvent: e });
+          calendar.popupApi?.openEvent(event);
+        }
       };
     });
   }

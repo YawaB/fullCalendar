@@ -39,11 +39,18 @@ export default function timeGridView(calendar) {
   const events = eventModel.inRange(viewStart, viewEnd);
 
   let html = '<div class="ec-timegrid-view">';
+  html += '<div class="ec-timegrid-layout">';
+  html += '<div class="ec-timegrid-gutter"><div class="ec-timegrid-gutter-head"></div>';
+  for (let hour = 0; hour < 24; hour += 1) {
+    const hourDate = new Date(2026, 0, 1, hour);
+    html += `<div class="ec-timegrid-gutter-slot">${formatTime(hourDate, options.locale)}</div>`;
+  }
+  html += '</div>';
   html += `<div class="ec-timegrid-body ec-cols-${days.length}">`;
   days.forEach(day => {
     html += renderDayColumn(day, events, options);
   });
-  html += '</div></div>';
+  html += '</div></div></div>';
 
   return html;
 }

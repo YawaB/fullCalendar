@@ -55,8 +55,13 @@
 }
 
 .ec-popup-overlay.open { display: flex; }
-.ec-popup { width: 360px; background: white; border-radius: 10px; padding: 16px; }
+.ec-popup { width: 360px; background: white; border-radius: 10px; padding: 16px; animation: ec-pop .15s ease-out; }
 .ec-popup label { display:block; font-size:.82rem; margin:8px 0; }
 .ec-popup input, .ec-popup select { width:100%; margin-top:4px; }
 .ec-popup-actions { margin-top:10px; display:flex; justify-content:flex-end; gap:8px; }
 .ec-popup-error { color:#dc2626; font-size:.8rem; }
+
+@keyframes ec-pop {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

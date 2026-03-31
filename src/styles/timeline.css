@@ -56,7 +56,10 @@
   border-right: 1px solid #e5e7eb;
   box-sizing: border-box;
   flex: 0 0 auto;
+  cursor: pointer;
 }
+
+.ec-grid-cell:hover { background: #f8fafc; }
 
 .ec-events-layer {
   position: absolute;

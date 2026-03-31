@@ -94,3 +94,11 @@ export function mergeOptions(defaults, overrides) {
     },
   };
 }
+
+export function parseTimeToMinutes(value, fallbackMinutes) {
+  if (!value || typeof value !== 'string') return fallbackMinutes;
+  const parts = value.split(':').map(Number);
+  if (parts.length < 2 || parts.some(n => Number.isNaN(n))) return fallbackMinutes;
+  const [hours, minutes = 0, seconds = 0] = parts;
+  return (hours * 60) + minutes + (seconds > 0 ? 1 : 0);
+}

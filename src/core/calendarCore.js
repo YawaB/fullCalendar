@@ -18,6 +18,8 @@ const DEFAULT_OPTIONS = {
   selectable: true,
   eventColor: '#3b82f6',
   eventTextColor: '#ffffff',
+  slotMinTime: '00:00:00',
+  slotMaxTime: '24:00:00',
   resourceRowHeight: 44,
   views: {
     month: {},

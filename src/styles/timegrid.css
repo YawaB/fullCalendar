@@ -1,3 +1,24 @@
+.ec-timegrid-layout {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+}
+
+.ec-timegrid-gutter-head {
+  height: 34px;
+  border-bottom: 1px solid var(--ec-border);
+  background: #f8fafc;
+}
+
+.ec-timegrid-gutter-slot {
+  height: 40px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.7rem;
+  color: #64748b;
+  text-align: right;
+  padding-right: 8px;
+  line-height: 40px;
+}
+
 .ec-timegrid-body {
   display: grid;
   gap: 0;
@@ -28,6 +49,8 @@
 }
 
 .ec-timegrid-slot { height: 40px; border-bottom: 1px solid transparent; }
+.ec-timegrid-slot { cursor: pointer; }
+.ec-timegrid-slot:hover { background: rgba(59, 130, 246, 0.06); }
 
 .ec-timegrid-event {
   position: absolute;
