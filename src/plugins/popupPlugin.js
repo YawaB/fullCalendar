@@ -40,8 +40,12 @@ export default function popupPlugin(calendar) {
     start.value = base.toISOString().slice(0, 16);
     end.value = endDate.toISOString().slice(0, 16);
 
-    resource.innerHTML = calendar.resourceModel.flat().map(r => `<option value="${r.id}">${r.title}</option>`).join('');
-    resource.value = resourceId || calendar.resourceModel.flat()[0]?.id || '';
+    const resources = calendar.resourceModel.flat();
+    resource.innerHTML = resources.length
+      ? resources.map(r => `<option value="${r.id}">${r.title}</option>`).join('')
+      : '<option value="">No resource</option>';
+    resource.value = resourceId || resources[0]?.id || '';
+    resource.disabled = calendar.mode !== 'timeline';
 
     error.hidden = true;
     error.textContent = '';
@@ -71,7 +75,7 @@ export default function popupPlugin(calendar) {
       title: title.value.trim(),
       start: startDate,
       end: endDate,
-      resourceId: resource.value,
+      resourceId: calendar.mode === 'timeline' ? resource.value : (resource.value || null),
       color: color.value,
     });
 

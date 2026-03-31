@@ -38,6 +38,12 @@
   height: 78vh;
 }
 
+.ec-standard-body {
+  height: 78vh;
+  overflow: auto;
+  background: #fff;
+}
+
 .ec-popup-overlay {
   position: fixed;
   inset: 0;
