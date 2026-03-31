@@ -1,6 +1,6 @@
 {
   "name": "@brinda_yawa/easycal",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A lightweight, zero-dependency JavaScript calendar library",
   "type": "module",
   "main": "dist/easycal.cjs.js",
@@ -15,7 +15,8 @@
     "./style.css": "./dist/easycal.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": [
     "*.css"

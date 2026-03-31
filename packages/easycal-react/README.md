@@ -1,4 +1,4 @@
-# EASY CALENDAR REACT
+# @brinda_yawa/easycal-react
 
 React wrapper for `@brinda_yawa/easycal`.
 
@@ -67,5 +67,3 @@ pnpm --filter @brinda_yawa/easycal-react build
 ```
 
 ## License
-
-MIT
