@@ -32,8 +32,8 @@ importers:
   packages/easycal-react:
     dependencies:
       '@brinda_yawa/easycal':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^1.0.6
+        version: 1.0.7
       react:
         specifier: '>=18'
         version: 19.2.4
@@ -52,6 +52,9 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@brinda_yawa/easycal@1.0.7':
+    resolution: {integrity: sha512-uMD5G0Cx9qq7P4rTu1SS2K9sl2cusrQu+tZXDpZdRvi1dbK4DYf4EVGRMazCLLwk5f0Jk2sUzowIdPR6HJGSxg==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -866,6 +869,8 @@ packages:
     engines: {node: '>= 6'}
 
 snapshots:
+
+  '@brinda_yawa/easycal@1.0.7': {}
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
