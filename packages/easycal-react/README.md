@@ -41,6 +41,7 @@ export default function CalendarPage() {
       eventClick={(info) => console.log('eventClick', info)}
       eventDrop={(info) => console.log('eventDrop', info)}
       eventResize={(info) => console.log('eventResize', info)}
+      onDateChange={({ date }) => console.log('onDateChange', date)}
     />
   );
 }
@@ -56,6 +57,7 @@ Type definitions are published with the package (`dist/index.d.ts`).
 - `className?: string`
 - `style?: React.CSSProperties`
 - `dateClick?: (info) => void`
+- `onDateChange?: (info) => void`
 - `eventClick?: (info) => void`
 - `eventDrop?: (info) => void`
 - `eventResize?: (info) => void`
