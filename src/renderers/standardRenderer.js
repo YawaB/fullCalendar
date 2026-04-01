@@ -39,6 +39,8 @@ export default class StandardRenderer {
           <button class="ec-nav-btn" data-action="prev">‹</button>
           <button class="ec-nav-btn" data-action="next">›</button>
           <button class="ec-nav-btn" data-action="today">Today</button>
+          <button class="ec-nav-btn" data-action="toggle-date-picker" aria-label="Go to date">📅</button>
+          <input class="ec-date-picker-input" data-action="date-picker-input" type="date" aria-label="Pick a date" />
           <button class="ec-nav-btn" data-action="open-popup">+</button>
         </div>
         <div class="ec-header-center">${title}</div>

@@ -31,6 +31,7 @@ const DEFAULT_OPTIONS = {
   },
   onEventClick: null,
   onDateClick: null,
+  onDateChange: null,
   eventDrag: null,
   eventResize: null,
   plugins: ['interaction', 'popup'],
@@ -74,10 +75,42 @@ export default class CalendarCore {
     return addDays(this.currentDate, direction);
   }
 
+  _setCurrentDate(nextDate, source = 'api') {
+    const normalizedDate = startOfDay(nextDate);
+    this.currentDate = normalizedDate;
+    this.options.onDateChange?.({ date: normalizedDate, source, view: this.currentView });
+    this.render();
+  }
+
   _bindHeader() {
     this.el.querySelector('[data-action="prev"]').onclick = () => this.prev();
     this.el.querySelector('[data-action="next"]').onclick = () => this.next();
     this.el.querySelector('[data-action="today"]').onclick = () => this.today();
+
+    const datePickerButton = this.el.querySelector('[data-action="toggle-date-picker"]');
+    const datePickerInput = this.el.querySelector('[data-action="date-picker-input"]');
+
+    if (datePickerButton && datePickerInput) {
+      datePickerButton.onclick = () => {
+        datePickerInput.value = this.currentDate.toISOString().slice(0, 10);
+        datePickerInput.classList.add('open');
+        if (typeof datePickerInput.showPicker === 'function') {
+          datePickerInput.showPicker();
+        } else {
+          datePickerInput.focus();
+          datePickerInput.click();
+        }
+      };
+
+      datePickerInput.onchange = (event) => {
+        const selectedDate = event.target.value;
+        if (selectedDate) this.gotoDate(selectedDate, 'date-picker');
+        datePickerInput.classList.remove('open');
+      };
+
+      datePickerInput.onblur = () => datePickerInput.classList.remove('open');
+    }
+
     this.el.querySelectorAll('[data-view]').forEach(btn => {
       btn.onclick = () => this.changeView(btn.dataset.view);
     });
@@ -126,9 +159,15 @@ export default class CalendarCore {
     this.plugins.forEach(plugin => plugin.bind?.(this.el));
   }
 
-  next() { this.currentDate = this._offset(1); this.render(); }
-  prev() { this.currentDate = this._offset(-1); this.render(); }
-  today() { this.currentDate = startOfDay(new Date()); this.render(); }
+  gotoDate(date, source = 'api') {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    if (Number.isNaN(parsedDate.getTime())) return;
+    this._setCurrentDate(parsedDate, source);
+  }
+
+  next() { this.gotoDate(this._offset(1), 'next'); }
+  prev() { this.gotoDate(this._offset(-1), 'prev'); }
+  today() { this.gotoDate(new Date(), 'today'); }
 
   changeView(view) {
     if (!this.renderer.allowedViews.includes(view)) return;
