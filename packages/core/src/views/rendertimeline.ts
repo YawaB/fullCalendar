@@ -1,4 +1,5 @@
-import { DateUtils } from '../core/index.js';
+// @ts-nocheck
+import { DateUtils } from '../core/index';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

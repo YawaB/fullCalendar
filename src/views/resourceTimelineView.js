@@ -1,0 +1,90 @@
+import { addDays, endOfDay, endOfMonth, endOfWeek, parseTimeToMinutes, startOfDay, startOfMonth, startOfWeek } from '../core/timeUtils.js';
+import { buildAxis, renderAxis } from '../layout/timelineAxis.js';
+import { layoutEvents } from '../layout/eventPositioning.js';
+import { renderTimelineEvent } from '../components/eventRenderer.js';
+import { renderResourceColumn } from '../components/resourceRenderer.js';
+
+function resolveRange(date, viewName, options) {
+  const minMinutes = parseTimeToMinutes(options.slotMinTime, 0);
+  const maxMinutes = parseTimeToMinutes(options.slotMaxTime, 24 * 60);
+  if (viewName === 'resourceTimelineWeek') {
+    const start = startOfWeek(date, options.firstDay);
+    const viewStart = new Date(start);
+    viewStart.setHours(Math.floor(minMinutes / 60), minMinutes % 60, 0, 0);
+    const weekEnd = endOfWeek(start, options.firstDay);
+    const viewEnd = new Date(weekEnd);
+    viewEnd.setHours(Math.floor((maxMinutes - 1) / 60), (maxMinutes - 1) % 60, 59, 999);
+    return { viewStart, viewEnd, slotDurationMinutes: 60 };
+  }
+  if (viewName === 'resourceTimelineMonth') {
+    const start = startOfMonth(date);
+    return { viewStart: start, viewEnd: endOfMonth(start), slotDurationMinutes: 24 * 60 };
+  }
+
+  const start = startOfDay(date);
+  const minHours = Math.floor(minMinutes / 60);
+  const minMins = minMinutes % 60;
+  const maxHours = Math.floor(maxMinutes / 60);
+  const maxMins = maxMinutes % 60;
+  start.setHours(minHours, minMins, 0, 0);
+  const end = new Date(start);
+  end.setHours(maxHours, maxMins, 0, 0);
+  return { viewStart: start, viewEnd: end, slotDurationMinutes: 60 };
+}
+
+export default function resourceTimelineView(calendar) {
+  const { currentDate, currentView, options, eventModel, resourceModel } = calendar;
+  const resources = resourceModel.flat();
+  const rowHeight = options.resourceRowHeight || 44;
+  const laneHeight = 20;
+  const laneGap = 3;
+
+  const { viewStart, viewEnd, slotDurationMinutes } = resolveRange(currentDate, currentView, options);
+  const slotWidth = currentView === 'resourceTimelineDay' ? 92 : currentView === 'resourceTimelineWeek' ? 42 : 72;
+
+  const slots = buildAxis(viewStart, addDays(viewEnd, currentView === 'resourceTimelineMonth' ? 1 : 0), slotDurationMinutes, currentView, options.locale);
+  const timelineWidth = Math.max(slots.length * slotWidth, currentView === 'resourceTimelineWeek' ? 2400 : 0);
+  const headerHeight = currentView === 'resourceTimelineWeek' ? 68 : 36;
+  const events = eventModel.inRange(viewStart, viewEnd);
+
+  const positioned = layoutEvents({
+    events,
+    resources,
+    viewStart,
+    viewEnd,
+    rowHeight,
+    laneHeight,
+    laneGap,
+    timelineWidth,
+  });
+
+  const gridRows = resources
+    .map(resource => `<div class="ec-grid-row" style="height:${rowHeight}px" data-resource-id="${resource.id}">${slots.map(slot => `<div class="ec-grid-cell" data-date="${slot.start.toISOString()}" data-resource-id="${resource.id}" style="width:${slotWidth}px"></div>`).join('')}</div>`)
+    .join('');
+
+  const nowIndicator = `<div class="ec-now-line"></div>`;
+
+  calendar._viewMetrics = {
+    currentView,
+    viewStart,
+    viewEnd,
+    slotDurationMinutes,
+    slotWidth,
+    timelineWidth,
+    rowHeight,
+    laneHeight,
+    laneGap,
+    resources,
+  };
+
+  return `
+    <div class="ec-body">
+      <div class="ec-resource-column">${renderResourceColumn(resources, rowHeight)}</div>
+      <div class="ec-timeline" data-timeline-root="1">
+        <div class="ec-time-header" style="width:${timelineWidth}px">${renderAxis(slots, slotWidth, currentView)}</div>
+        <div class="ec-grid" style="width:${timelineWidth}px">${gridRows}</div>
+        <div class="ec-events-layer" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px;top:${headerHeight}px">${positioned.map(item => renderTimelineEvent(item, options)).join('')}${nowIndicator}</div>
+      </div>
+    </div>
+  `;
+}

@@ -1,138 +1,61 @@
-# EasyCal
+# EasyCal Monorepo
 
-A lightweight, zero-dependency JavaScript calendar library.
+This repository is now a workspace monorepo with two publishable packages:
 
-## Features
+- `@brinda_yawa/easycal` (framework-agnostic core)
+- `@brinda_yawa/easycal-react` (React wrapper)
 
-- 🗓 **4 Views**: Month, Week, Day, List/Agenda
-- ⚡ **Zero dependencies** — pure vanilla JS
-- 🎨 **Fully themeable** via CSS custom properties
-- 📡 **Event API** — add/remove/update events at runtime
-- 🌍 **i18n ready** — locale-aware via `Intl` API
-- 📦 **UMD + ESM** builds for any environment
+## Workspace layout
 
-## Installation
+```txt
+packages/
+  core/            # @brinda_yawa/easycal
+  easycal-react/   # @brinda_yawa/easycal-react
+pnpm-workspace.yaml
+```
+
+## Install (workspace)
 
 ```bash
-npm install easycal
+pnpm install
+pnpm build
 ```
 
-Or via CDN:
-```html
-<link rel="stylesheet" href="https://unpkg.com/easycal/dist/easycal.css">
-<script src="https://unpkg.com/easycal/dist/easycal.js"></script>
+If you hit missing-module errors from Rollup/TypeScript bins, use Node LTS (20.x) and do a clean reinstall:
+
+```bash
+nvm use 20.19.0
+rm -rf node_modules packages/*/node_modules pnpm-lock.yaml
+pnpm store prune
+pnpm install
+pnpm --filter @brinda_yawa/easycal build
+pnpm --filter @brinda_yawa/easycal-react build
 ```
 
-## Quick Start
+The workspace now enforces Node 20.x during install (`preinstall` + `engine-strict`) so unsupported versions such as Node 23 fail fast with a clear recovery message.
 
-```html
-<link rel="stylesheet" href="easycal.css">
-<div id="calendar"></div>
-<script src="easycal.js"></script>
-<script>
-  const cal = new EasyCal('#calendar', {
-    view: 'month',
-    events: [
-      {
-        title: 'Team Standup',
-        start: '2025-01-15T09:00:00',
-        end:   '2025-01-15T09:30:00',
-        color: '#3b82f6'
-      }
-    ]
-  });
-</script>
-```
+## React wrapper usage
 
-## Options
+```tsx
+import { EasyCal } from '@brinda_yawa/easycal-react';
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `view` | `string` | `'month'` | Initial view: `month`, `week`, `day`, `list` |
-| `date` | `Date` | `new Date()` | Initial date |
-| `events` | `array` | `[]` | Array of event objects |
-| `locale` | `string` | `'default'` | Locale string for date formatting |
-| `firstDay` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
-| `eventColor` | `string` | `'#3b82f6'` | Default event background color |
-| `eventTextColor` | `string` | `'#ffffff'` | Default event text color |
-| `headerToolbar` | `object` | See below | Toolbar layout |
-
-### headerToolbar
-
-```js
-{
-  left:   'prev,next today',
-  center: 'title',
-  right:  'month,week,day,list'
+export function CalendarPage() {
+  return (
+    <EasyCal
+      mode="timeline"
+      defaultView="resourceTimelineWeek"
+      events={[]}
+      resources={[]}
+      dateClick={(info) => console.log(info)}
+      eventClick={(info) => console.log(info)}
+      eventDrop={(info) => console.log(info)}
+      eventResize={(info) => console.log(info)}
+    />
+  );
 }
 ```
 
-## Event Object
+## Notes
 
-```js
-{
-  id:         'optional-id',    // auto-generated if omitted
-  title:      'My Event',       // required
-  start:      '2025-03-10T09:00', // Date or ISO string
-  end:        '2025-03-10T10:00', // Date or ISO string
-  allDay:     false,
-  color:      '#3b82f6',        // overrides eventColor
-  textColor:  '#ffffff',
-  extendedProps: {}             // custom data
-}
-```
-
-## Callbacks
-
-```js
-const cal = new EasyCal('#calendar', {
-  eventClick({ event, el, jsEvent }) {},
-  eventMouseEnter({ event, el, jsEvent }) {},
-  eventMouseLeave({ event, el, jsEvent }) {},
-  dateClick({ date, el, jsEvent }) {},
-  datesSet({ view, start, el }) {},
-  viewDidMount({ view, date, el }) {},
-});
-```
-
-## API Methods
-
-```js
-cal.changeView('week');          // switch view
-cal.today();                     // go to today
-cal.prev();                      // previous period
-cal.next();                      // next period
-cal.gotoDate(new Date());        // jump to date
-
-cal.addEvent({ title, start, end, ... });    // add event → returns event
-cal.removeEvent('event-id');     // remove event
-cal.updateEvent('event-id', {title: 'New'}); // update event
-cal.getEvents();                 // → EventObject[]
-cal.getEventById('id');          // → EventObject | null
-
-cal.setOption('eventColor', '#ff0000'); // update option
-cal.destroy();                   // cleanup
-```
-
-## Theming
-
-EasyCal uses CSS custom properties for easy theming:
-
-```css
-#calendar {
-  --ec-font:         'Your Font', sans-serif;
-  --ec-bg:           #ffffff;
-  --ec-border:       #e5e7eb;
-  --ec-text:         #111827;
-  --ec-text-muted:   #6b7280;
-  --ec-today-color:  #2563eb;
-  --ec-today-bg:     #eff6ff;
-  --ec-hover-bg:     #f3f4f6;
-  --ec-header-bg:    #f9fafb;
-  --ec-event-radius: 4px;
-}
-```
-
-## License
-
-MIT
+- Core stays framework-agnostic.
+- React package is a thin adapter around the core instance lifecycle.

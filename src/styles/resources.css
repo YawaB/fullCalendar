@@ -1,0 +1,19 @@
+.ec-resource-column {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid #e5e7eb;
+  background: #fff;
+  overflow: hidden;
+  position: sticky;
+  left: 0;
+  z-index: 30;
+  box-shadow: 4px 0 8px rgba(0,0,0,.04);
+}
+
+.ec-resource-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
