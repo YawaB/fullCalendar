@@ -120,9 +120,11 @@ export default class CalendarCore {
     if (this.mode !== 'timeline') return;
     const timeline = this.el.querySelector('.ec-timeline');
     const resourceCol = this.el.querySelector('.ec-resource-column');
-    if (!timeline || !resourceCol) return;
+    const timeHeaderScroller = this.el.querySelector('[data-time-header-scroller]');
+    if (!timeline || !resourceCol || !timeHeaderScroller) return;
     timeline.addEventListener('scroll', () => {
       resourceCol.scrollTop = timeline.scrollTop;
+      timeHeaderScroller.scrollLeft = timeline.scrollLeft;
     });
   }
 
