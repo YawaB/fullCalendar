@@ -6,7 +6,7 @@
 
 .ec-timeline-header-row {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: var(--ec-resource-area-width, 350px) minmax(0, 1fr);
   position: sticky;
   top: 0;
   z-index: 34;
@@ -15,7 +15,7 @@
 
 .ec-timeline-body {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: var(--ec-resource-area-width, 350px) minmax(0, 1fr);
   min-height: 0;
 }
 

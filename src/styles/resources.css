@@ -1,13 +1,12 @@
 .ec-resource-column {
-  width: 280px;
-  min-width: 280px;
+  width: var(--ec-resource-area-width, 350px);
+  min-width: var(--ec-resource-area-width, 350px);
   border-right: 1px solid #e5e7eb;
   background: #fff;
   overflow: hidden;
   position: sticky;
   left: 0;
   z-index: 30;
-  box-shadow: 4px 0 8px rgba(0,0,0,.04);
 }
 
 .ec-resource-row {
@@ -20,8 +19,8 @@
 }
 
 .ec-resource-header {
-  width: 280px;
-  min-width: 280px;
+  width: var(--ec-resource-area-width, 350px);
+  min-width: var(--ec-resource-area-width, 350px);
   height: 100%;
   display: flex;
   align-items: center;

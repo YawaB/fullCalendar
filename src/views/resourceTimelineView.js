@@ -36,6 +36,9 @@ export default function resourceTimelineView(calendar) {
   const { currentDate, currentView, options, eventModel, resourceModel } = calendar;
   const resources = resourceModel.flat();
   const rowHeight = options.resourceRowHeight || 44;
+  const resourceAreaWidth = typeof options.resourceAreaWidth === 'number'
+    ? `${options.resourceAreaWidth}px`
+    : (options.resourceAreaWidth || '350px');
   const laneHeight = 20;
   const laneGap = 3;
 
@@ -78,7 +81,7 @@ export default function resourceTimelineView(calendar) {
   };
 
   return `
-    <div class="ec-body ec-timeline-layout" style="--ec-resource-row-height:${rowHeight}px">
+    <div class="ec-body ec-timeline-layout" style="--ec-resource-row-height:${rowHeight}px;--ec-resource-area-width:${resourceAreaWidth}">
       <div class="ec-timeline-header-row">
         <div class="ec-resource-header">${resourceHeaderLabel}</div>
         <div class="ec-time-header-scroller" data-time-header-scroller="1">
