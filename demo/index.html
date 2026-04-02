@@ -14,6 +14,8 @@
     select, button { border: 1px solid #d1d5db; background: #fff; border-radius: 8px; padding: 7px 10px; font-size: 14px; cursor: pointer; }
     button { font-weight: 600; }
     #calendar { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .demo-resource { display: grid; gap: 2px; }
+    .demo-resource small { color: #6b7280; }
   </style>
 </head>
 <body>
@@ -32,6 +34,13 @@
           <select id="viewSwitch"></select>
         </label>
 
+        <label>Resource rendering
+          <select id="resourcePresetSwitch">
+            <option value="default">Default rendering</option>
+            <option value="custom">Custom rendering</option>
+          </select>
+        </label>
+
         <button id="todayBtn" type="button">Today</button>
       </div>
     </div>
@@ -44,11 +53,26 @@
     const STANDARD_VIEWS = ['month', 'week', 'day'];
     const TIMELINE_VIEWS = ['resourceTimelineDay', 'resourceTimelineWeek', 'resourceTimelineMonth'];
 
-    const resources = [
+    const defaultResources = [
       { id: 'a', title: 'Auditorium A' },
       { id: 'b', title: 'Auditorium B' },
       { id: 'c', title: 'Auditorium C' },
       { id: 'd', title: 'Auditorium D', children: [{ id: 'd1', title: 'Room D1' }, { id: 'd2', title: 'Room D2' }] }
+    ];
+
+    const customResources = [
+      { uuid: 'a', label: 'Auditorium A', icon: '🏢', description: 'Main hall' },
+      { uuid: 'b', label: 'Auditorium B', icon: '🎤', description: 'Event space' },
+      {
+        uuid: 'd',
+        label: 'Auditorium D',
+        icon: '🏛️',
+        description: 'Conference floor',
+        children: [
+          { uuid: 'd1', label: 'Room D1', icon: '🧩', description: 'Breakout room' },
+          { uuid: 'd2', label: 'Room D2', icon: '🧪', description: 'Workshop room' }
+        ]
+      }
     ];
 
     const events = [
@@ -60,6 +84,7 @@
 
     const modeSwitch = document.getElementById('modeSwitch');
     const viewSwitch = document.getElementById('viewSwitch');
+    const resourcePresetSwitch = document.getElementById('resourcePresetSwitch');
     const todayBtn = document.getElementById('todayBtn');
 
     let cal;
@@ -75,23 +100,46 @@
       return viewSwitch.value;
     }
 
+    function getResourceConfig() {
+      if (resourcePresetSwitch.value === 'custom') {
+        return {
+          resources: customResources,
+          resourceFieldMap: { id: 'uuid', label: 'label' },
+          resourceRenderer: (resource) => `
+            <div class="demo-resource">
+              <div><span>${resource.icon || ''}</span> <strong>${resource.label || resource.title || resource.name || resource.uuid}</strong></div>
+              <small>${resource.description || ''}</small>
+            </div>
+          `
+        };
+      }
+
+      return {
+        resources: defaultResources,
+        resourceFieldMap: undefined,
+        resourceRenderer: undefined,
+      };
+    }
+
     function mountCalendar() {
       if (cal) cal.destroy();
 
       const mode = modeSwitch.value;
       const defaultView = populateViewOptions(mode, viewSwitch.value);
+      const resourceConfig = getResourceConfig();
 
       cal = new EasyCal('#calendar', {
         mode,
         defaultView,
         initialDate: new Date('2026-03-30T00:00:00'),
-        resources,
         events,
-        editable: true
+        editable: true,
+        ...resourceConfig,
       });
     }
 
     modeSwitch.addEventListener('change', mountCalendar);
+    resourcePresetSwitch.addEventListener('change', mountCalendar);
 
     viewSwitch.addEventListener('change', () => {
       if (!cal) return;

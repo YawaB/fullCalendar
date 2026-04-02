@@ -1,20 +1,43 @@
+// @ts-nocheck
 export class ResourceModel {
-  constructor(resources = []) {
-    this.load(resources);
+  constructor(resources = [], fieldMap = {}) {
+    this._fieldMap = fieldMap || {};
+    this.load(resources, fieldMap);
   }
 
-  load(resources = []) {
-    this._resources = resources;
+  load(resources = [], fieldMap = this._fieldMap) {
+    this._fieldMap = fieldMap || {};
+    this._resources = Array.isArray(resources) ? resources : [];
     this._flat = [];
 
-    const walk = (nodes, depth = 0) => {
-      nodes.forEach(node => {
-        this._flat.push({ ...node, depth });
-        if (Array.isArray(node.children) && node.children.length) walk(node.children, depth + 1);
+    const idKey = this._fieldMap.id || 'id';
+    const labelKey = this._fieldMap.label || 'title';
+
+    const walk = (nodes, depth = 0, parentId = null, path = []) => {
+      nodes.forEach((node, index) => {
+        const location = [...path, index].join('-');
+        const resolvedId = node?.[idKey] ?? node?.id ?? `resource-${location}`;
+        const _id = String(resolvedId);
+        const _label = node?.[labelKey] ?? node?.title ?? node?.label ?? node?.name ?? _id;
+
+        this._flat.push({
+          ...node,
+          id: _id,
+          title: _label,
+          depth,
+          parentId,
+          _id,
+          _label,
+          _resource: node,
+        });
+
+        if (Array.isArray(node?.children) && node.children.length) {
+          walk(node.children, depth + 1, _id, [...path, index]);
+        }
       });
     };
 
-    walk(resources, 0);
+    walk(this._resources, 0);
   }
 
   all() {
@@ -26,6 +49,6 @@ export class ResourceModel {
   }
 
   byId(id) {
-    return this._flat.find(r => r.id === id) || null;
+    return this._flat.find(resource => resource._id === String(id)) || null;
   }
 }
