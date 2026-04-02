@@ -3,17 +3,30 @@
   min-width: 280px;
   border-right: 1px solid #e5e7eb;
   background: #fff;
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: hidden;
   position: sticky;
   left: 0;
   z-index: 30;
   box-shadow: 4px 0 8px rgba(0,0,0,.04);
+  box-sizing: border-box;
+}
+
+.ec-resource-header-spacer {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 31;
+  box-sizing: border-box;
 }
 
 .ec-resource-row {
   display: flex;
   align-items: center;
+  height: var(--ec-row-height);
   border-bottom: 1px solid #e5e7eb;
   font-size: 1.05rem;
   white-space: nowrap;
+  box-sizing: border-box;
 }
