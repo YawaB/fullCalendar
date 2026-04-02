@@ -2,7 +2,7 @@ import { clamp } from '../core/timeUtils.js';
 
 export function layoutEvents({ events, resources, viewStart, viewEnd, rowHeight, laneHeight, laneGap, timelineWidth }) {
   const totalMs = Math.max(viewEnd - viewStart, 1);
-  const byResource = new Map(resources.map((r, i) => [r.id, { resource: r, index: i, events: [] }]));
+  const byResource = new Map(resources.map((r, i) => [r._id, { resource: r, index: i, events: [] }]));
 
   events.forEach(event => {
     const bucket = byResource.get(event.resourceId);

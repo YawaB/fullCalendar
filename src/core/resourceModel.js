@@ -1,3 +1,4 @@
+// @ts-nocheck
 export class ResourceModel {
   constructor(resources = [], fieldMap = {}) {
     this._fieldMap = fieldMap || {};
@@ -16,21 +17,22 @@ export class ResourceModel {
       nodes.forEach((node, index) => {
         const location = [...path, index].join('-');
         const resolvedId = node?.[idKey] ?? node?.id ?? `resource-${location}`;
-        const id = String(resolvedId);
-        const label = node?.[labelKey] ?? node?.title ?? node?.name ?? id;
+        const _id = String(resolvedId);
+        const _label = node?.[labelKey] ?? node?.title ?? node?.label ?? node?.name ?? _id;
 
         this._flat.push({
           ...node,
-          id,
+          id: _id,
+          title: _label,
           depth,
           parentId,
-          _resourceId: id,
-          _resourceLabel: label,
+          _id,
+          _label,
           _resource: node,
         });
 
         if (Array.isArray(node?.children) && node.children.length) {
-          walk(node.children, depth + 1, id, [...path, index]);
+          walk(node.children, depth + 1, _id, [...path, index]);
         }
       });
     };
@@ -47,6 +49,6 @@ export class ResourceModel {
   }
 
   byId(id) {
-    return this._flat.find(r => r.id === String(id)) || null;
+    return this._flat.find(resource => resource._id === String(id)) || null;
   }
 }

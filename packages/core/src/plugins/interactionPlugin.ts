@@ -15,7 +15,8 @@ export default function interactionPlugin(calendar) {
       if (cell.classList.contains('ec-time-slot') || cell.classList.contains('ec-timegrid-col-head')) return;
       cell.onclick = e => {
         const { date, resourceId } = parseCell(cell);
-        calendar.options.onDateClick?.({ date, resourceId, el: cell, jsEvent: e });
+        const resource = calendar.resourceModel.byId(resourceId);
+        calendar.options.onDateClick?.({ date, resourceId, resource, el: cell, jsEvent: e });
         if (calendar.popupApi) calendar.popupApi.open(date, resourceId);
       };
     });
@@ -27,7 +28,8 @@ export default function interactionPlugin(calendar) {
         e.stopPropagation();
         const event = calendar.eventModel.byId(el.dataset.eventId);
         if (event) {
-          calendar.options.onEventClick?.({ event, el, jsEvent: e });
+          const resource = calendar.resourceModel.byId(event.resourceId);
+          calendar.options.onEventClick?.({ event, resourceId: event.resourceId, resource, el, jsEvent: e });
           calendar.popupApi?.openEvent(event);
         }
       };
@@ -59,7 +61,10 @@ export default function interactionPlugin(calendar) {
           resourceId,
         });
 
-        if (updated) calendar.options.eventDrag?.({ event: updated, date, resourceId });
+        if (updated) {
+          const resource = calendar.resourceModel.byId(resourceId);
+          calendar.options.eventDrag?.({ event: updated, date, resourceId, resource });
+        }
       };
     });
   }

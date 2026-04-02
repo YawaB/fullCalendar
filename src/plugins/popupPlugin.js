@@ -43,9 +43,9 @@ export default function popupPlugin(calendar) {
 
     const resources = calendar.resourceModel.flat();
     resource.innerHTML = resources.length
-      ? resources.map(r => `<option value="${r.id}">${r.title}</option>`).join('')
+      ? resources.map(r => `<option value="${r._id}">${r._label}</option>`).join('')
       : '<option value="">No resource</option>';
-    resource.value = resourceId || resources[0]?.id || '';
+    resource.value = resourceId || resources[0]?._id || '';
     resource.disabled = calendar.mode !== 'timeline';
     editingId = null;
 
@@ -62,9 +62,9 @@ export default function popupPlugin(calendar) {
 
     const resources = calendar.resourceModel.flat();
     resource.innerHTML = resources.length
-      ? resources.map(r => `<option value="${r.id}">${r.title}</option>`).join('')
+      ? resources.map(r => `<option value="${r._id}">${r._label}</option>`).join('')
       : '<option value="">No resource</option>';
-    resource.value = event.resourceId || resources[0]?.id || '';
+    resource.value = event.resourceId || resources[0]?._id || '';
     resource.disabled = calendar.mode !== 'timeline';
 
     editingId = event.id;

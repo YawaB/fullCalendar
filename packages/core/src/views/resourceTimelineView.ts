@@ -63,7 +63,7 @@ export default function resourceTimelineView(calendar) {
   });
 
   const gridRows = resources
-    .map(resource => `<div class="ec-grid-row" data-resource-id="${resource.id}">${slots.map(slot => `<div class="ec-grid-cell" data-date="${slot.start.toISOString()}" data-resource-id="${resource.id}" style="width:${slotWidth}px"></div>`).join('')}</div>`)
+    .map(resource => `<div class="ec-grid-row" data-resource-id="${resource._id}">${slots.map(slot => `<div class="ec-grid-cell" data-date="${slot.start.toISOString()}" data-resource-id="${resource._id}" style="width:${slotWidth}px"></div>`).join('')}</div>`)
     .join('');
 
   const nowIndicator = `<div class="ec-now-line"></div>`;
