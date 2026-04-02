@@ -15,9 +15,17 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url === '/' ? '/demo.html' : req.url;
-  const cleanPath = path.normalize(decodeURIComponent(requestPath)).replace(/^([.][./\\])+/, '');
-  const filePath = path.join(__dirname, cleanPath);
+  const rawPath = req.url || '/';
+  const requested = rawPath === '/' ? '/demo/index.html' : rawPath;
+  const normalized = path.posix.normalize(decodeURIComponent(requested));
+  const relativePath = normalized.replace(/^\/+/, '');
+  const filePath = path.join(__dirname, relativePath);
+
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Forbidden');
+    return;
+  }
 
   fs.readFile(filePath, (err, content) => {
     if (err) {
@@ -27,14 +35,12 @@ const server = http.createServer((req, res) => {
     }
 
     const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-    res.writeHead(200, { 'Content-Type': contentType });
+    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
     res.end(content);
   });
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Demo running at http://localhost:${PORT}`);
+  console.log(`Demo running at http://localhost:${PORT}/demo/index.html`);
 });
