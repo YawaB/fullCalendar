@@ -3,55 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EasyCal Modes Demo</title>
-  <link rel="stylesheet" href="../dist/easycal.css" />
+  <title>EasyCal Core Demo</title>
+  <link rel="stylesheet" href="/packages/core/dist/easycal.css" />
   <style>
-    body { margin: 0; background: #f3f4f6; font-family: Inter, sans-serif; }
-    .wrap { max-width: 1600px; margin: 16px auto; }
-    .controls { margin-bottom: 10px; }
-    select { padding: 8px; }
-    #calendar { background: #fff; }
+    body { margin: 0; background: #f3f4f6; font-family: Inter, sans-serif; color: #111827; }
+    .wrap { max-width: 1400px; margin: 16px auto; padding: 0 12px; }
+    .header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .controls label { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
+    select, button { border: 1px solid #d1d5db; background: #fff; border-radius: 8px; padding: 7px 10px; font-size: 14px; cursor: pointer; }
+    button { font-weight: 600; }
+    #calendar { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="controls">
-      <label>Mode:
-        <select id="modeSwitch">
-          <option value="standard">Standard</option>
-          <option value="timeline">Timeline</option>
-        </select>
-      </label>
+    <div class="header">
+      <h1 style="margin:0;font-size:20px;">EasyCal Core Demo</h1>
+      <div class="controls">
+        <label>Mode
+          <select id="modeSwitch">
+            <option value="standard">standard</option>
+            <option value="timeline">timeline</option>
+          </select>
+        </label>
+
+        <label>View
+          <select id="viewSwitch"></select>
+        </label>
+
+        <button id="todayBtn" type="button">Today</button>
+      </div>
     </div>
+
     <div id="calendar"></div>
   </div>
 
-  <script src="../dist/easycal.umd.js"></script>
+  <script src="/packages/core/dist/easycal.cjs.js"></script>
   <script>
+    const STANDARD_VIEWS = ['month', 'week', 'day'];
+    const TIMELINE_VIEWS = ['resourceTimelineDay', 'resourceTimelineWeek', 'resourceTimelineMonth'];
+
     const resources = [
       { id: 'a', title: 'Auditorium A' },
       { id: 'b', title: 'Auditorium B' },
       { id: 'c', title: 'Auditorium C' },
-      { id: 'd', title: 'Auditorium D', children: [{ id: 'd1', title: 'Room D1' }, { id: 'd2', title: 'Room D2' }] },
-      { id: 'e', title: 'Auditorium E' },
-      { id: 'f', title: 'Auditorium F' }
+      { id: 'd', title: 'Auditorium D', children: [{ id: 'd1', title: 'Room D1' }, { id: 'd2', title: 'Room D2' }] }
     ];
 
     const events = [
-      { id: '1', title: 'event 1', start: '2026-03-30T06:00:00', end: '2026-03-30T18:00:00', resourceId: 'd', color: '#3b82f6' },
-      { id: '2', title: 'event 2', start: '2026-03-30T09:00:00', end: '2026-03-30T14:00:00', resourceId: 'e', color: '#3b82f6' },
-      { id: '3', title: 'event 3', start: '2026-03-31T12:00:00', end: '2026-03-31T17:00:00', resourceId: 'c', color: '#f59e0b' },
-      { id: '4', title: 'event 4', start: '2026-03-30T07:00:00', end: '2026-03-30T09:00:00', resourceId: 'f', color: '#ef4444' },
-      { id: '5', title: 'event 5', start: '2026-03-30T10:00:00', end: '2026-03-30T15:00:00', resourceId: 'b', color: '#16a34a' }
+      { id: '1', title: 'Design review', start: '2026-03-30T08:00:00', end: '2026-03-30T10:00:00', resourceId: 'a', color: '#2563eb' },
+      { id: '2', title: 'Customer call', start: '2026-03-30T10:00:00', end: '2026-03-30T11:30:00', resourceId: 'b', color: '#059669' },
+      { id: '3', title: 'Maintenance', start: '2026-03-31T09:00:00', end: '2026-03-31T12:00:00', resourceId: 'd1', color: '#ea580c' },
+      { id: '4', title: 'Town hall', start: '2026-03-31T13:00:00', end: '2026-03-31T15:00:00', resourceId: 'c', color: '#7c3aed' }
     ];
+
+    const modeSwitch = document.getElementById('modeSwitch');
+    const viewSwitch = document.getElementById('viewSwitch');
+    const todayBtn = document.getElementById('todayBtn');
 
     let cal;
 
-    function mount(mode) {
+    function getViewsForMode(mode) {
+      return mode === 'timeline' ? TIMELINE_VIEWS : STANDARD_VIEWS;
+    }
+
+    function populateViewOptions(mode, selectedView) {
+      const views = getViewsForMode(mode);
+      viewSwitch.innerHTML = views.map((view) => `<option value="${view}">${view}</option>`).join('');
+      viewSwitch.value = views.includes(selectedView) ? selectedView : views[0];
+      return viewSwitch.value;
+    }
+
+    function mountCalendar() {
       if (cal) cal.destroy();
+
+      const mode = modeSwitch.value;
+      const defaultView = populateViewOptions(mode, viewSwitch.value);
+
       cal = new EasyCal('#calendar', {
         mode,
-        defaultView: mode === 'timeline' ? 'resourceTimelineDay' : 'month',
+        defaultView,
         initialDate: new Date('2026-03-30T00:00:00'),
         resources,
         events,
@@ -59,8 +91,19 @@
       });
     }
 
-    document.getElementById('modeSwitch').addEventListener('change', (e) => mount(e.target.value));
-    mount('standard');
+    modeSwitch.addEventListener('change', mountCalendar);
+
+    viewSwitch.addEventListener('change', () => {
+      if (!cal) return;
+      cal.changeView(viewSwitch.value);
+    });
+
+    todayBtn.addEventListener('click', () => {
+      if (!cal) return;
+      cal.today();
+    });
+
+    mountCalendar();
   </script>
 </body>
 </html>
