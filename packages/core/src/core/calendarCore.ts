@@ -22,6 +22,8 @@ const DEFAULT_OPTIONS = {
   slotMinTime: '00:00:00',
   slotMaxTime: '24:00:00',
   resourceRowHeight: 44,
+  resourceRenderer: null,
+  resourceFieldMap: {},
   views: {
     month: {},
     week: {},
@@ -55,7 +57,7 @@ export default class CalendarCore {
 
     this.currentDate = startOfDay(options.initialDate || new Date());
     this.eventModel = new EventModel(this.options.events);
-    this.resourceModel = new ResourceModel(this.options.resources);
+    this.resourceModel = new ResourceModel(this.options.resources, this.options.resourceFieldMap);
 
     this.plugins = [];
     this._nowTimer = null;
@@ -188,8 +190,10 @@ export default class CalendarCore {
     this.options = mergeOptions(this.options, nextOptions);
     this.mode = this.options.mode || this.mode;
 
-    if (nextOptions.events) this.eventModel.load(nextOptions.events);
-    if (nextOptions.resources) this.resourceModel.load(nextOptions.resources);
+    if ('events' in nextOptions) this.eventModel.load(nextOptions.events || []);
+    if ('resources' in nextOptions || 'resourceFieldMap' in nextOptions) {
+      this.resourceModel.load(this.options.resources || [], this.options.resourceFieldMap || {});
+    }
 
     if (previousMode !== this.mode) {
       this.renderer = this.mode === 'timeline' ? new TimelineRenderer(this) : new StandardRenderer(this);

@@ -90,7 +90,7 @@ export default function resourceTimelineView(calendar) {
         </div>
       </div>
       <div class="ec-timeline-body">
-        <div class="ec-resource-column">${renderResourceColumn(resources)}</div>
+        <div class="ec-resource-column">${renderResourceColumn(resources, { resourceRenderer: options.resourceRenderer })}</div>
         <div class="ec-timeline" data-timeline-root="1">
           <div class="ec-grid-wrap" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px">
             <div class="ec-grid">${gridRows}</div>
