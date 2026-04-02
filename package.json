@@ -14,6 +14,7 @@
     "preinstall": "node ./scripts/check-node.js",
     "build": "pnpm -r build",
     "build:core": "pnpm --filter @brinda_yawa/easycal build",
-    "build:react": "pnpm --filter @brinda_yawa/easycal-react build"
+    "build:react": "pnpm --filter @brinda_yawa/easycal-react build",
+    "demo": "node server.js"
   }
 }

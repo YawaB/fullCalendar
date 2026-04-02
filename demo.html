@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyCal Modes Demo</title>
+  <link rel="stylesheet" href="/dist/easycal.css" />
+  <style>
+    body { margin: 0; background: #f3f4f6; font-family: Inter, sans-serif; }
+    .wrap { max-width: 1600px; margin: 16px auto; }
+    .controls { margin-bottom: 10px; }
+    select { padding: 8px; }
+    #calendar { background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="controls">
+      <label>Mode:
+        <select id="modeSwitch">
+          <option value="standard">Standard</option>
+          <option value="timeline">Timeline</option>
+        </select>
+      </label>
+    </div>
+    <div id="calendar"></div>
+  </div>
+
+  <script src="/dist/easycal.umd.js"></script>
+  <script>
+    const resources = [
+      { id: 'a', title: 'Auditorium A' },
+      { id: 'b', title: 'Auditorium B' },
+      { id: 'c', title: 'Auditorium C' },
+      { id: 'd', title: 'Auditorium D', children: [{ id: 'd1', title: 'Room D1' }, { id: 'd2', title: 'Room D2' }] },
+      { id: 'e', title: 'Auditorium E' },
+      { id: 'f', title: 'Auditorium F' }
+    ];
+
+    const events = [
+      { id: '1', title: 'event 1', start: '2026-03-30T06:00:00', end: '2026-03-30T18:00:00', resourceId: 'd', color: '#3b82f6' },
+      { id: '2', title: 'event 2', start: '2026-03-30T09:00:00', end: '2026-03-30T14:00:00', resourceId: 'e', color: '#3b82f6' },
+      { id: '3', title: 'event 3', start: '2026-03-31T12:00:00', end: '2026-03-31T17:00:00', resourceId: 'c', color: '#f59e0b' },
+      { id: '4', title: 'event 4', start: '2026-03-30T07:00:00', end: '2026-03-30T09:00:00', resourceId: 'f', color: '#ef4444' },
+      { id: '5', title: 'event 5', start: '2026-03-30T10:00:00', end: '2026-03-30T15:00:00', resourceId: 'b', color: '#16a34a' }
+    ];
+
+    let cal;
+
+    function mount(mode) {
+      if (cal) cal.destroy();
+      cal = new EasyCal('#calendar', {
+        mode,
+        defaultView: mode === 'timeline' ? 'resourceTimelineDay' : 'month',
+        initialDate: new Date('2026-03-30T00:00:00'),
+        resources,
+        events,
+        editable: true
+      });
+    }
+
+    document.getElementById('modeSwitch').addEventListener('change', (e) => mount(e.target.value));
+    mount('standard');
+  </script>
+</body>
+</html>
