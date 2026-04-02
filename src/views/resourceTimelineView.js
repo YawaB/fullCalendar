@@ -44,8 +44,8 @@ export default function resourceTimelineView(calendar) {
 
   const slots = buildAxis(viewStart, addDays(viewEnd, currentView === 'resourceTimelineMonth' ? 1 : 0), slotDurationMinutes, currentView, options.locale);
   const timelineWidth = Math.max(slots.length * slotWidth, currentView === 'resourceTimelineWeek' ? 2400 : 0);
-  const headerHeight = currentView === 'resourceTimelineWeek' ? 68 : 36;
   const events = eventModel.inRange(viewStart, viewEnd);
+  const resourceHeaderLabel = options.resourceAreaHeaderContent || 'Rooms';
 
   const positioned = layoutEvents({
     events,
@@ -78,12 +78,21 @@ export default function resourceTimelineView(calendar) {
   };
 
   return `
-    <div class="ec-body" style="--ec-row-height:${rowHeight}px;--ec-timeline-header-height:${headerHeight}px">
-      <div class="ec-resource-column">${renderResourceColumn(resources, headerHeight)}</div>
-      <div class="ec-timeline" data-timeline-root="1">
-        <div class="ec-time-header" style="width:${timelineWidth}px">${renderAxis(slots, slotWidth, currentView)}</div>
-        <div class="ec-grid" style="width:${timelineWidth}px">${gridRows}</div>
-        <div class="ec-events-layer" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px;top:${headerHeight}px">${positioned.map(item => renderTimelineEvent(item, options)).join('')}${nowIndicator}</div>
+    <div class="ec-body ec-timeline-layout" style="--ec-resource-row-height:${rowHeight}px">
+      <div class="ec-timeline-header-row">
+        <div class="ec-resource-header">${resourceHeaderLabel}</div>
+        <div class="ec-time-header-scroller" data-time-header-scroller="1">
+          <div class="ec-time-header" style="width:${timelineWidth}px">${renderAxis(slots, slotWidth, currentView)}</div>
+        </div>
+      </div>
+      <div class="ec-timeline-body">
+        <div class="ec-resource-column">${renderResourceColumn(resources)}</div>
+        <div class="ec-timeline" data-timeline-root="1">
+          <div class="ec-grid-wrap" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px">
+            <div class="ec-grid">${gridRows}</div>
+            <div class="ec-events-layer" style="width:${timelineWidth}px;height:${resources.length * rowHeight}px">${positioned.map(item => renderTimelineEvent(item, options)).join('')}${nowIndicator}</div>
+          </div>
+        </div>
       </div>
     </div>
   `;
