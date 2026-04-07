@@ -24,6 +24,17 @@ export type EasyCalResourceFieldMap = {
 
 export type EasyCalResourceRenderer = (resource: any) => ReactNode | HTMLElement | string;
 
+export type EasyCalEventFormContext = {
+  mode: 'create' | 'edit';
+  event?: any;
+  date?: Date;
+  resourceId?: string | null;
+  save: (data?: any) => void;
+  update: (data?: any) => void;
+  delete: () => void;
+  close: () => void;
+};
+
 export type EasyCalProps = {
   initialDate?: string | Date;
   className?: string;
@@ -31,6 +42,7 @@ export type EasyCalProps = {
   resources?: any[];
   resourceRenderer?: EasyCalResourceRenderer;
   resourceFieldMap?: EasyCalResourceFieldMap;
+  eventFormRenderer?: (context: EasyCalEventFormContext) => ReactNode;
   onDateChange?: (info: EasyCalEventInfo) => void;
   dateClick?: (info: EasyCalEventInfo) => void;
   eventClick?: (info: EasyCalEventInfo) => void;
@@ -58,6 +70,13 @@ function normalizeDate(value: string | Date): string | null {
   return date.toISOString().slice(0, 10);
 }
 
+function normalizeInfo(info: EasyCalEventInfo) {
+  return {
+    ...info,
+    resourceId: info?.resourceId ?? null,
+  };
+}
+
 function toCoreResourceRenderer(renderer?: EasyCalResourceRenderer) {
   if (typeof renderer !== 'function') return undefined;
 
@@ -70,20 +89,33 @@ function toCoreResourceRenderer(renderer?: EasyCalResourceRenderer) {
   };
 }
 
+function toCoreEventFormRenderer(renderer?: (context: EasyCalEventFormContext) => ReactNode) {
+  if (typeof renderer !== 'function') return undefined;
+
+  return (context: EasyCalEventFormContext) => {
+    const result = renderer(context);
+    if (typeof result === 'string' || result instanceof HTMLElement) return result;
+    if (result == null || typeof result === 'boolean') return '';
+    if (isValidElement(result)) return renderToStaticMarkup(result);
+    return String(result);
+  };
+}
+
 function buildBoundOptions(propsRef: React.MutableRefObject<EasyCalProps>, lastAppliedDateRef: React.MutableRefObject<string | null>) {
   return {
     ...propsRef.current,
     resourceRenderer: toCoreResourceRenderer(propsRef.current.resourceRenderer),
+    eventFormRenderer: toCoreEventFormRenderer(propsRef.current.eventFormRenderer),
     onDateChange: (info: EasyCalEventInfo) => {
       if (info?.date instanceof Date && !Number.isNaN(info.date.getTime())) {
         lastAppliedDateRef.current = info.date.toISOString().slice(0, 10);
       }
-      propsRef.current.onDateChange?.(info);
+      propsRef.current.onDateChange?.(normalizeInfo(info));
     },
-    onDateClick: (info: EasyCalEventInfo) => propsRef.current.dateClick?.(info),
-    onEventClick: (info: EasyCalEventInfo) => propsRef.current.eventClick?.(info),
-    eventDrag: (info: EasyCalEventInfo) => propsRef.current.eventDrop?.(info),
-    eventResize: (info: EasyCalEventInfo) => propsRef.current.eventResize?.(info),
+    dateClick: (info: EasyCalEventInfo) => propsRef.current.dateClick?.(normalizeInfo(info)),
+    eventClick: (info: EasyCalEventInfo) => propsRef.current.eventClick?.(normalizeInfo(info)),
+    eventDrop: (info: EasyCalEventInfo) => propsRef.current.eventDrop?.(normalizeInfo(info)),
+    eventResize: (info: EasyCalEventInfo) => propsRef.current.eventResize?.(normalizeInfo(info)),
   };
 }
 

@@ -41,6 +41,13 @@
           </select>
         </label>
 
+        <label>Event form
+          <select id="eventFormSwitch">
+            <option value="default">Default form</option>
+            <option value="custom">Custom (vanilla JS)</option>
+          </select>
+        </label>
+
         <button id="todayBtn" type="button">Today</button>
       </div>
     </div>
@@ -85,6 +92,7 @@
     const modeSwitch = document.getElementById('modeSwitch');
     const viewSwitch = document.getElementById('viewSwitch');
     const resourcePresetSwitch = document.getElementById('resourcePresetSwitch');
+    const eventFormSwitch = document.getElementById('eventFormSwitch');
     const todayBtn = document.getElementById('todayBtn');
 
     let cal;
@@ -121,6 +129,29 @@
       };
     }
 
+    function customEventForm(context) {
+      const resources = (cal?.resourceModel?.flat?.() || []).map((resource) =>
+        `<option value="${resource._id}" ${resource._id === (context.resourceId || context.event?.resourceId) ? 'selected' : ''}>${resource._label}</option>`
+      ).join('');
+
+      return `
+        <form data-ec-form style="display:grid;gap:10px;">
+          <h3 style="margin:0;">${context.mode === 'edit' ? 'Edit event' : 'Create event'}</h3>
+          <input name="title" placeholder="Title" value="${context.event?.title || ''}" required />
+          <input name="start" type="datetime-local" value="${new Date(context.event?.start || context.date).toISOString().slice(0,16)}" required />
+          <input name="end" type="datetime-local" value="${new Date(context.event?.end || (new Date(context.date).getTime() + 60 * 60 * 1000)).toISOString().slice(0,16)}" required />
+          <select name="resourceId">${resources || '<option value="">No resource</option>'}</select>
+          <input name="color" type="color" value="${context.event?.color || '#3b82f6'}" />
+          <p class="ec-popup-error" hidden></p>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            ${context.mode === 'edit' ? '<button type="button" data-ec-action="delete">Delete</button>' : ''}
+            <button type="button" data-ec-action="cancel">Cancel</button>
+            <button type="submit" data-ec-action="${context.mode === 'edit' ? 'update' : 'save'}">${context.mode === 'edit' ? 'Update' : 'Save'}</button>
+          </div>
+        </form>
+      `;
+    }
+
     function mountCalendar() {
       if (cal) cal.destroy();
 
@@ -134,12 +165,18 @@
         initialDate: new Date('2026-03-30T00:00:00'),
         events,
         editable: true,
+        eventFormRenderer: eventFormSwitch.value === 'custom' ? customEventForm : undefined,
+        dateClick: (info) => console.log('dateClick', info),
+        eventClick: (info) => console.log('eventClick', info),
+        eventDrop: (info) => console.log('eventDrop', info),
+        onDateChange: (info) => console.log('onDateChange', info),
         ...resourceConfig,
       });
     }
 
     modeSwitch.addEventListener('change', mountCalendar);
     resourcePresetSwitch.addEventListener('change', mountCalendar);
+    eventFormSwitch.addEventListener('change', mountCalendar);
 
     viewSwitch.addEventListener('change', () => {
       if (!cal) return;

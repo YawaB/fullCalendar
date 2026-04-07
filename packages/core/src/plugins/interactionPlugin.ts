@@ -16,7 +16,9 @@ export default function interactionPlugin(calendar) {
       cell.onclick = e => {
         const { date, resourceId } = parseCell(cell);
         const resource = calendar.resourceModel.byId(resourceId);
-        calendar.options.onDateClick?.({ date, resourceId, resource, el: cell, jsEvent: e });
+        const payload = { date, resourceId: resourceId || null, resource, el: cell, jsEvent: e };
+        calendar.options.dateClick?.(payload);
+        calendar.options.onDateClick?.(payload);
         if (calendar.popupApi) calendar.popupApi.open(date, resourceId);
       };
     });
@@ -29,7 +31,9 @@ export default function interactionPlugin(calendar) {
         const event = calendar.eventModel.byId(el.dataset.eventId);
         if (event) {
           const resource = calendar.resourceModel.byId(event.resourceId);
-          calendar.options.onEventClick?.({ event, resourceId: event.resourceId, resource, el, jsEvent: e });
+          const payload = { event, resourceId: event.resourceId || null, resource, el, jsEvent: e };
+          calendar.options.eventClick?.(payload);
+          calendar.options.onEventClick?.(payload);
           calendar.popupApi?.openEvent(event);
         }
       };
@@ -63,7 +67,9 @@ export default function interactionPlugin(calendar) {
 
         if (updated) {
           const resource = calendar.resourceModel.byId(resourceId);
-          calendar.options.eventDrag?.({ event: updated, date, resourceId, resource });
+          const payload = { event: updated, date, resourceId: resourceId || null, resource };
+          calendar.options.eventDrop?.(payload);
+          calendar.options.eventDrag?.(payload);
         }
       };
     });
