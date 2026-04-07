@@ -33,10 +33,14 @@ const DEFAULT_OPTIONS = {
     resourceTimelineMonth: {},
   },
   onEventClick: null,
+  eventClick: null,
   onDateClick: null,
+  dateClick: null,
   onDateChange: null,
+  eventDrop: null,
   eventDrag: null,
   eventResize: null,
+  eventFormRenderer: null,
   plugins: ['interaction', 'popup'],
 };
 

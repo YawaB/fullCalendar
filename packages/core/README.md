@@ -4,6 +4,7 @@ A lightweight, zero-dependency JavaScript calendar library with:
 
 - `mode: 'standard'` for `month`, `week`, and `day` views
 - `mode: 'timeline'` for `resourceTimelineDay`, `resourceTimelineWeek`, and `resourceTimelineMonth`
+- Built-in event form logic that can now be fully customized
 
 ## Installation
 
@@ -24,6 +25,67 @@ const cal = new EasyCal('#calendar', {
 });
 ```
 
+## Event Form Customization
+
+Use `eventFormRenderer` to override create/edit form UI while keeping EasyCal's internal create/update/delete logic:
+
+```js
+const cal = new EasyCal('#calendar', {
+  mode: 'timeline',
+  defaultView: 'resourceTimelineWeek',
+  eventFormRenderer: (context) => {
+    return `
+      <form data-ec-form>
+        <h3>${context.mode === 'edit' ? 'Edit event' : 'Create event'}</h3>
+        <input name="title" value="${context.event?.title || ''}" placeholder="Title" required />
+        <input name="start" type="datetime-local" required />
+        <input name="end" type="datetime-local" required />
+        <select name="resourceId"></select>
+        <p class="ec-popup-error" hidden></p>
+        <button type="button" data-ec-action="cancel">Cancel</button>
+        ${context.mode === 'edit' ? '<button type="button" data-ec-action="delete">Delete</button>' : ''}
+        <button type="submit" data-ec-action="${context.mode === 'edit' ? 'update' : 'save'}">
+          ${context.mode === 'edit' ? 'Update' : 'Save'}
+        </button>
+      </form>
+    `;
+  }
+});
+```
+
+### Context Object Explained
+
+`eventFormRenderer` receives:
+
+```ts
+{
+  mode: 'create' | 'edit',
+  event?: EventObject,
+  date?: Date,
+  resourceId?: string,
+  save: (data?) => void,
+  update: (data?) => void,
+  delete: () => void,
+  close: () => void,
+}
+```
+
+Behavior:
+
+- `dateClick` opens **create mode** with prefilled `date` and `resourceId`.
+- `eventClick` opens **edit mode** with the selected `event`.
+- `resourceId` is normalized and passed in standard/timeline payloads.
+- Internal event lifecycle stays centralized in EasyCal (`addEvent`, `updateEvent`, `removeEvent`).
+
+## Event hooks
+
+All hooks are supported and normalized:
+
+- `dateClick(info)` (alias: `onDateClick`)
+- `eventClick(info)` (alias: `onEventClick`)
+- `eventDrop(info)` (alias: `eventDrag`)
+- `onDateChange(info)`
+
 ## Resource Basics
 
 Resources work out of the box with a minimal structure:
@@ -38,8 +100,6 @@ const cal = new EasyCal('#calendar', {
   ]
 });
 ```
-
-If no custom renderer is provided, EasyCal renders `title` (fallback: `id`).
 
 ## Custom Resource Structure
 
@@ -85,54 +145,12 @@ const cal = new EasyCal('#calendar', {
 - `string` (HTML string)
 - `HTMLElement`
 
-## `resourceFieldMap`
-
-Use `resourceFieldMap` when your input data uses different key names:
-
-```js
-const cal = new EasyCal('#calendar', {
-  mode: 'timeline',
-  defaultView: 'resourceTimelineDay',
-  resources: [
-    { uuid: 'a', name: 'Room A' },
-    { uuid: 'b', name: 'Room B' }
-  ],
-  resourceFieldMap: {
-    id: 'uuid',
-    label: 'name'
-  }
-});
-```
-
-This lets your events continue using `resourceId` values like `'a'`, `'b'` without pre-transforming resources.
-
-## Best Practices
+## Best practices
 
 - Keep resource ids stable across renders (`resourceId` matching depends on this).
-- Keep `resourceRenderer` lightweight (avoid heavy DOM work in large timelines).
-- Use `resourceFieldMap` to adapt API data instead of cloning/mapping large arrays repeatedly.
-
-## Timeline example
-
-```js
-const cal = new EasyCal('#calendar', {
-  mode: 'timeline',
-  defaultView: 'resourceTimelineWeek',
-  resources: [
-    { id: 'room-1', title: 'Room A' },
-    { id: 'room-2', title: 'Room B' }
-  ],
-  events: [
-    {
-      id: '1',
-      title: 'Meeting',
-      start: '2026-03-30T10:00:00',
-      end: '2026-03-30T11:30:00',
-      resourceId: 'room-1'
-    }
-  ]
-});
-```
+- Keep custom renderers lightweight.
+- Use `resourceFieldMap` for API adaptation.
+- In custom forms, prefer `data-ec-form` + `data-ec-action` to reuse built-in validation + persistence.
 
 ## API
 

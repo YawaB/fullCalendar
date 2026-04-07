@@ -55,11 +55,17 @@
 }
 
 .ec-popup-overlay.open { display: flex; }
-.ec-popup { width: 360px; background: white; border-radius: 10px; padding: 16px; animation: ec-pop .15s ease-out; }
-.ec-popup label { display:block; font-size:.82rem; margin:8px 0; }
-.ec-popup input, .ec-popup select { width:100%; margin-top:4px; }
-.ec-popup-actions { margin-top:10px; display:flex; justify-content:flex-end; gap:8px; }
-.ec-popup-error { color:#dc2626; font-size:.8rem; }
+.ec-popup { width: min(460px, 94vw); background: white; border-radius: 12px; padding: 18px; animation: ec-pop .15s ease-out; }
+.ec-popup-title { margin: 0 0 12px; font-size: 1.1rem; font-weight: 700; }
+.ec-popup-form { display: grid; gap: 10px; }
+.ec-popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ec-popup-field { display: grid; gap: 6px; font-size: .82rem; font-weight: 600; color: #374151; }
+.ec-popup-field input, .ec-popup-field select { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 10px; font: inherit; }
+.ec-popup-actions { margin-top: 4px; display: flex; justify-content: flex-end; gap: 8px; }
+.ec-btn { border: 1px solid #d1d5db; background: #fff; color: #111827; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-weight: 600; }
+.ec-btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.ec-btn-danger { border-color: #dc2626; color: #dc2626; margin-right: auto; }
+.ec-popup-error { color:#dc2626; font-size:.82rem; margin: 0; }
 
 @keyframes ec-pop {
   from { opacity: 0; transform: translateY(6px); }
